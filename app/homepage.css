@@ -1,0 +1,115 @@
+
+/* Homepage CSS*/
+/* Welcome section*/
+.Welcome-Info {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.Welcome-Info h1 {
+  font-size: 2.5rem;
+  font-weight: bold; /* bold text*/
+  color: var(--accent); 
+  margin-bottom: 10px;
+}
+.Welcome-Info p {
+  font-size: 1rem;
+  color: #555; 
+  margin-bottom: 25px;
+}
+/* Buttons for Login + Register*/
+.Home-Button-area {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+.button {
+  background-color: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+.button:hover {
+  background-color: var(--accent-hover);
+}
+.button-outline {
+  background-color: transparent;
+  border: 2px solid var(--accent);
+  color: var(--accent);
+}
+.button-outline:hover {
+  background-color: var(--accent);
+  color: #fff;
+}
+/* Image*/
+.Welcome-Right-Box {
+  text-align: center;
+  margin-top: 30px;
+}
+.Welcome-Image {
+  width: 320px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* How it works Section */
+
+.Home-Info-Section {
+  background-color: var(--card-bg);
+  border-radius: 10px;
+  padding: 40px 20px;
+  margin-top: 50px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.Home-Info-Section h2 {
+  color: var(--accent);
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+.Home-Info-Section p {
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Categories Grid Section */
+.Category-lists {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.Category-Type {
+  background-color: var(--footer-bg);
+  border: 1px solid var(--accent);
+  border-radius: 20px;
+  padding: 10px 0;
+  color: var(--accent);
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.Category-Type:hover {
+  background-color: var(--accent);
+  color: white;
+}
+
+
+/* Footer Section */
+footer {
+  background-color: var(--footer-bg);
+  text-align: center;
+  padding: 20px;
+  font-size: 0.9rem;
+  color: #333;
+  border-top: 1px solid #cbd5d1;
+  margin-top: 60px;
+}
