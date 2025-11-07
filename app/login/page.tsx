@@ -1,64 +1,55 @@
-"use client"; // enables client-side interactivity
-
-import React, { useState } from "react";
-import "./login.css"; // connects to the login CSS file
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import "./login.css";
 
 export default function LoginPage() {
-  // These state variables store user inputs for email and password
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-  // This function handles when the login button is clicked
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault(); // stops the page from refreshing automatically
-    console.log("User tried to login with:", email, password);
-    // Later, this will be connected to the database validation (SQLite/Prisma)
-    alert("Login successful (placeholder message)");
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      // Redirect based on role
+      if (data.user.User_Role === "Donor") router.push("/donor");
+      else if (data.user.User_Role === "Admin") router.push("/admin");
+      else if (data.user.User_Role === "Staff") router.push("/staff"); // optional
+    } else {
+      setError(data.error);
+    }
   };
 
   return (
     <div className="login-container">
-      {/* Back to homepage link */}
-      <a href="/" className="back-home">← Back to homepage</a>
-
-      {/* Page heading for login */}
-      <h1>Login to Your Account</h1>
-
-      {/* Login form begins */}
+      <h1>Login</h1>
       <form onSubmit={handleLogin}>
-        {/* Input field for user email */}
         <input
           type="text"
-          placeholder="Enter your email"
-          className="login-input"
+          placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)} // stores input into state
-          required
+          onChange={(e) => setEmail(e.target.value)}
         />
-
-        {/* Input field for user password */}
         <input
           type="password"
-          placeholder="Enter your password"
-          className="login-input"
+          placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)} // stores input into state
-          required
+          onChange={(e) => setPassword(e.target.value)}
         />
-
-        {/* Login button */}
-        <button type="submit" className="login-button">
-          Login
-        </button>
+        <button type="submit">Login</button>
       </form>
-
-      {/* Footer text with a register link */}
-      <div className="login-footer">
-        <p>
-          Don’t have an account?{" "}
-          <a href="/register">Register here</a>
-        </p>
-      </div>
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 }
