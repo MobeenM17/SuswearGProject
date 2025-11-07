@@ -1,0 +1,99 @@
+/* ===============================
+   LOGIN PAGE STYLING
+   =============================== */
+
+/* CHANGED: use global background + text colours */
+body {
+    background-color: var(--background);          /* CHANGED */
+    color: var(--text);                           /* CHANGED */
+    font-family: "Arial", sans-serif;
+    display: flex;
+    justify-content: center; /* centers login box horizontally */
+    align-items: center;     /* centers login box vertically */
+    height: 100vh;           /* fills full page height */
+    margin: 0;
+  }
+  
+  /* Main container that holds the login form box */
+  .login-container {
+    background-color: var(--card-bg);             /* CHANGED */
+    border-radius: 12px;
+    padding: 40px;
+    width: 360px;
+    box-shadow: var(--shadow);                    /* CHANGED */
+    text-align: center;
+    position: relative; /* for back-home positioning */
+  }
+  
+  /* Back to homepage link */
+  .back-home {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--accent);                         /* CHANGED */
+    font-weight: bold;
+    transition: color 0.2s ease;
+  }
+  .back-home:hover {
+    text-decoration: underline;
+    color: var(--accent-hover);                   /* CHANGED */
+  }
+  
+  /* Heading for login box */
+  .login-container h1 {
+    color: var(--accent);                         /* CHANGED */
+    font-size: 26px;
+    margin-bottom: 25px;
+  }
+  
+  /* Input fields (email, password) */
+  .login-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 18px;
+    border: 1px solid var(--edge);                /* CHANGED */
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  .login-input:focus {
+    border-color: var(--accent);                  /* CHANGED */
+  }
+  
+  /* Main login button */
+  .login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--accent);              /* CHANGED */
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .login-button:hover {
+    background-color: var(--accent-hover);        /* CHANGED */
+  }
+  
+  /* Footer text under login form */
+  .login-footer {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  /* Register link in footer */
+  .login-footer a {
+    color: var(--accent);                         /* CHANGED */
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .login-footer a:hover {
+    text-decoration: underline;
+    color: var(--accent-hover);                   /* CHANGED */
+  }
+  
