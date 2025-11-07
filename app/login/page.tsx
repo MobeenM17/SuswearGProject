@@ -13,43 +13,64 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
+      // Checks if Details is expected
+      if (!res.ok || !data?.user?.User_Role) {
+        setError(data?.error || "Login failed. Please check your details.");
+        return;
+      }
+
       // Redirect based on role
-      if (data.user.User_Role === "Donor") router.push("/donor");
-      else if (data.user.User_Role === "Admin") router.push("/admin");
-      else if (data.user.User_Role === "Staff") router.push("/staff"); // optional
-    } else {
-      setError(data.error);
+      const role = data.user.User_Role;
+      if (role === "Donor") router.push("/donor");
+      else if (role === "Admin") router.push("/admin");
+      else if (role === "Staff") router.push("/staff");
+      else router.push("/"); // fallback
+    } catch {
+      setError("Network error. Please try again.");
     }
   };
 
   return (
     <div className="login-container">
+      {/* Back to homepage */}
+      <a href="/" className="back-home">← Back to homepage</a>
+
       <h1>Login</h1>
+
       <form onSubmit={handleLogin}>
         <input
-          type="text"
+          type="email"
           placeholder="Email"
+          className="login-input"               
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          autoComplete="email"
+          required
         />
         <input
           type="password"
           placeholder="Password"
+          className="login-input"               
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          autoComplete="current-password"
+          required
         />
-        <button type="submit">Login</button>
+        <button type="submit" className="login-button"> 
+          Login
+        </button>
       </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {error && <p className="login-error">{error}</p>}
     </div>
   );
 }

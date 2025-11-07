@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import "./admin.css"; // make sure this CSS file exists in the same folder
+import { useRouter } from "next/navigation";
+import "./admin.css"; // keeps your styling
 
 interface User {
   id: number;
@@ -18,17 +19,26 @@ const dummyUsers: User[] = [
 
 export default function AdminPage() {
   const [users, setUsers] = useState<User[]>(dummyUsers);
+  const router = useRouter();
+
+  // --- NEW: same logout behavior as donor ---
+  async function handleLogout() {
+    try {
+      await fetch("/api/logout", { method: "POST" });
+      router.push("/"); // back to homepage
+    } catch {
+      alert("Failed to log out. Please try again.");
+    }
+  }
 
   const promoteToAdmin = (id: number) => {
-    setUsers((prev) =>
-      prev.map((user) =>
-        user.id === id ? { ...user, role: "Admin" } : user
-      )
+    setUsers(prev =>
+      prev.map(u => (u.id === id ? { ...u, role: "Admin" } : u))
     );
   };
 
   const deleteUser = (id: number) => {
-    setUsers((prev) => prev.filter((user) => user.id !== id));
+    setUsers(prev => prev.filter(u => u.id !== id));
   };
 
   return (
@@ -39,8 +49,13 @@ export default function AdminPage() {
           <h1>Admin Dashboard</h1>
           <a href="/" className="back-link">← Back to homepage</a>
         </div>
+
         <div className="header-actions">
+          {/* Optional link mirroring donor header */}
+          <a className="outline-btn" href="/admin">Dashboard</a>
           <button className="primary-btn">Settings</button>
+          {/* NEW: logout button */}
+          <button className="ghost-btn" onClick={handleLogout}>Logout</button>
         </div>
       </div>
 

@@ -5,29 +5,54 @@ import "./register.css"; // connects to the register CSS file
 
 export default function RegisterPage() {
   // These store the user's input values
-  const [fullName, setFullName] = useState(""); // added full name field
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // This will display a short success or error message
+  // This displays short success or error messages
   const [message, setMessage] = useState("");
 
-  // This function handles when the user clicks the register button
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault(); // stops the page from refreshing automatically
+  // This function runs when the Register button is clicked
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault(); // stops the page from refreshing
+    setMessage(""); // clears any previous messages
 
-    // Check if passwords match
+    // Check if both passwords match
     if (password !== confirmPassword) {
       setMessage("Passwords do not match. Please try again.");
       return;
     }
 
-    // Temporary message before database connection is added
-    console.log("User registered with:", fullName, email);
-    setMessage("Registration successful! You can now log in.");
+    try {
+      // Send data to the backend API
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName, email, password }),
+      });
+
+      const data = await res.json(); // waits for the response
+
+      // If something went wrong
+      if (!res.ok) {
+        setMessage(data?.error || "Registration failed.");
+        return;
+      }
+
+      // If registration worked successfully
+      setMessage("Registration successful! You can now log in.");
+      setFullName("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+    } catch {
+      // Handles any connection problems
+      setMessage("Network error. Please try again.");
+    }
   };
 
+  // HTML layout and structure of the page
   return (
     <div className="register-container">
       {/* Back to homepage link */}
@@ -38,7 +63,6 @@ export default function RegisterPage() {
 
       {/* Registration form section */}
       <form onSubmit={handleRegister}>
-        {/* Full Name input field */}
         <input
           type="text"
           placeholder="Enter your full name"
@@ -48,7 +72,6 @@ export default function RegisterPage() {
           required
         />
 
-        {/* Email input field */}
         <input
           type="email"
           placeholder="Enter your email"
@@ -58,7 +81,6 @@ export default function RegisterPage() {
           required
         />
 
-        {/* Password input field */}
         <input
           type="password"
           placeholder="Enter your password"
@@ -68,7 +90,6 @@ export default function RegisterPage() {
           required
         />
 
-        {/* Confirm password input field */}
         <input
           type="password"
           placeholder="Confirm your password"

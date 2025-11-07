@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useRouter } from "next/navigation"; // ✅ Added for navigation
 import "./donor.css";
 
 type DonationStatus = "pending" | "accepted" | "rejected" | "distributed";
@@ -18,6 +19,8 @@ type Donation = {
 const CATEGORIES = ["Tops", "Bottoms", "Outerwear", "Footwear", "Accessories", "Other"] as const;
 
 export default function DonorDashboard() {
+  const router = useRouter(); // ✅ Initialize router for redirect
+
   // -------- Submit form state --------
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<(typeof CATEGORIES)[number] | "">("");
@@ -25,7 +28,7 @@ export default function DonorDashboard() {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // -------- History mock state (replace with API later) --------
+  // -------- Donation history (temporary mock) --------
   const [history, setHistory] = useState<Donation[]>([
     {
       id: "DN-001",
@@ -69,12 +72,12 @@ export default function DonorDashboard() {
     });
   }, [history, statusFilter, fromDate, toDate]);
 
-  // -------- Impact (very rough example) --------
+  // -------- Impact calculation --------
   const totalItems = filteredHistory.length;
   const totalWeight = filteredHistory.reduce((acc, d) => acc + (d.weightKg || 0), 0);
   const co2Saved = +(totalWeight * 2.5).toFixed(2);
 
-  // -------- Handlers --------
+  // -------- Image and form handlers --------
   const onPhotoChange = (f: File | null) => {
     setPhotoFile(null);
     if (!f) return;
@@ -120,8 +123,19 @@ export default function DonorDashboard() {
     resetForm();
   };
 
+  // ✅ REAL LOGOUT FUNCTION
+  async function handleLogout() {
+    try {
+      await fetch("/api/logout", { method: "POST" });
+      router.push("/"); // back to homepage
+    } catch {
+      alert("Failed to log out. Please try again.");
+    }
+  }
+
   return (
     <div className="donor-wrap Main-ContainerBox">
+      {/* ---------- Header Section ---------- */}
       <header className="donor-header">
         <div className="header-left">
           <a className="back-link" href="/">← Back to homepage</a>
@@ -129,10 +143,11 @@ export default function DonorDashboard() {
         </div>
         <div className="header-actions">
           <a className="outline-btn" href="/donor">Dashboard</a>
-          <button className="ghost-btn" onClick={() => alert("Logging out (placeholder)")}>Logout</button>
+          <button className="ghost-btn" onClick={handleLogout}>Logout</button> {/* ✅ Updated */}
         </div>
       </header>
 
+      {/* ---------- Alerts ---------- */}
       {message && (
         <div className={`alert ${message.type === "success" ? "alert-success" : "alert-error"}`}>
           {message.text}
@@ -140,8 +155,9 @@ export default function DonorDashboard() {
         </div>
       )}
 
+      {/* ---------- Grid Layout ---------- */}
       <div className="grid">
-        {/* -------- Submit Donation -------- */}
+        {/* Submit Donation */}
         <section className="card">
           <h2>Submit Donation</h2>
           <form onSubmit={handleSubmit} className="form">
@@ -202,7 +218,7 @@ export default function DonorDashboard() {
           </form>
         </section>
 
-        {/* -------- Impact -------- */}
+        {/* Impact */}
         <section className="card impact">
           <h2>Your Impact</h2>
           <div className="stats">
@@ -222,7 +238,7 @@ export default function DonorDashboard() {
           <p className="muted">*CO₂ estimate is indicative and will be replaced with real metrics later.</p>
         </section>
 
-        {/* -------- History + Filters -------- */}
+        {/* History */}
         <section className="card history">
           <div className="history-head">
             <h2>Donation History</h2>
