@@ -6,7 +6,7 @@ You will need to have Node.js https://nodejs.org/en/download (LTS 24.11.0) files
 
 1.You will need go into Terminal, Click on Terminal, New Terminal
 
-2.Run npm install bcrypt
+2.Run: npm i
 
 3.Now run another new terminal which will run a local host and to do that click Terminal, New Ternminal then run the command npm run dev
 
