@@ -21,7 +21,7 @@ export default function AdminPage() {
   const [users, setUsers] = useState<User[]>(dummyUsers);
   const router = useRouter();
 
-  // --- NEW: same logout behavior as donor ---
+  // --- Logout ---
   async function handleLogout() {
     try {
       await fetch("/api/logout", { method: "POST" });
@@ -31,14 +31,16 @@ export default function AdminPage() {
     }
   }
 
+  // --- Promote user to admin ---
   const promoteToAdmin = (id: number) => {
-    setUsers(prev =>
-      prev.map(u => (u.id === id ? { ...u, role: "Admin" } : u))
+    setUsers((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, role: "Admin" } : u))
     );
   };
 
+  // --- Delete user ---
   const deleteUser = (id: number) => {
-    setUsers(prev => prev.filter(u => u.id !== id));
+    setUsers((prev) => prev.filter((u) => u.id !== id));
   };
 
   return (
@@ -47,15 +49,24 @@ export default function AdminPage() {
       <div className="admin-header">
         <div className="header-left">
           <h1>Admin Dashboard</h1>
-          <a href="/" className="back-link">← Back to homepage</a>
+          <a href="/" className="back-link">
+            ← Back to homepage
+          </a>
         </div>
 
         <div className="header-actions">
-          {/* Optional link mirroring donor header */}
-          <a className="outline-btn" href="/admin">Dashboard</a>
-          <button className="primary-btn">Settings</button>
-          {/* NEW: logout button */}
-          <button className="ghost-btn" onClick={handleLogout}>Logout</button>
+          <a className="outline-btn" href="/admin">
+            Dashboard
+          </a>
+
+          {/* NEW: Report CO₂ Emissions button */}
+          <a className="primary-btn" href="/admin/report">
+            Report CO₂ Emissions
+          </a>
+
+          <button className="ghost-btn" onClick={handleLogout}>
+            Logout
+          </button>
         </div>
       </div>
 
@@ -66,15 +77,21 @@ export default function AdminPage() {
           <div className="stat-label">Total Users</div>
         </div>
         <div className="stat">
-          <div className="stat-value">{users.filter(u => u.role === "Admin").length}</div>
+          <div className="stat-value">
+            {users.filter((u) => u.role === "Admin").length}
+          </div>
           <div className="stat-label">Admins</div>
         </div>
         <div className="stat">
-          <div className="stat-value">{users.filter(u => u.role === "User").length}</div>
+          <div className="stat-value">
+            {users.filter((u) => u.role === "User").length}
+          </div>
           <div className="stat-label">Regular Users</div>
         </div>
         <div className="stat">
-          <div className="stat-value">{users.filter(u => u.role === "Suspended").length}</div>
+          <div className="stat-value">
+            {users.filter((u) => u.role === "Suspended").length}
+          </div>
           <div className="stat-label">Suspended</div>
         </div>
       </div>
@@ -92,7 +109,7 @@ export default function AdminPage() {
             </tr>
           </thead>
           <tbody>
-            {users.map(user => (
+            {users.map((user) => (
               <tr key={user.id}>
                 <td>{user.id}</td>
                 <td>{user.name}</td>
