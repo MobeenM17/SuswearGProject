@@ -123,7 +123,7 @@ export default function DonorDashboard() {
     resetForm();
   };
 
-  // ✅ REAL LOGOUT FUNCTION
+  //LOGOUT FUNCTION
   async function handleLogout() {
     try {
       await fetch("/api/logout", { method: "POST" });
@@ -143,7 +143,7 @@ export default function DonorDashboard() {
         </div>
         <div className="header-actions">
           <a className="outline-btn" href="/donor">Dashboard</a>
-          <button className="ghost-btn" onClick={handleLogout}>Logout</button> {/* ✅ Updated */}
+          <button className="ghost-btn" onClick={handleLogout}>Logout</button>
         </div>
       </header>
 
