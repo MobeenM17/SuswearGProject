@@ -1,8 +1,11 @@
-import { NextResponse } from "next/server"; // use to clear the cookie session which treats it as a logout function
+import { NextResponse } from "next/server";
 
+/**
+ * - Clears both cookies
+ */
 export async function POST() {
-  const res = NextResponse.json({ checkPassword: true });
-  // deletes the cookie by making it expired by changing the max age to 0
+  const res = NextResponse.json({ ok: true });
   res.cookies.set("session_role", "", { path: "/", maxAge: 0, httpOnly: true, sameSite: "lax" });
+  res.cookies.set("session_user_id", "", { path: "/", maxAge: 0, httpOnly: true, sameSite: "lax" });
   return res;
 }

@@ -1,152 +1,166 @@
 import { NextResponse } from "next/server";
 import { openDb } from "@/db/db";
 
-// --- CO₂ and Landfill factors by category ---
-const CO2_KG_BY_CATEGORY: Record<string, number> = {
-  "Clothing": 3.0,
-  "Men": 3.5,
-  "Women": 3.5,
-  "Children": 2.0,
+/** Database row types */
+type DonorRow = { Donor_ID: number; Full_Name: string; Email: string };
+type DonationRow = { Donation_ID: number; Description: string; CategoryName: string };
+
+/** Factors: kg saved per accepted/distributed donation */
+const CO2_KG: Record<string, number> = {
+  Clothing: 3.0,
+  Men: 3.5,
+  Women: 3.5,
+  Children: 2.0,
   "Coats & Jackets": 12.0,
-  "Tops": 2.5,
+  Tops: 2.5,
 };
 
-const LANDFILL_KG_BY_CATEGORY: Record<string, number> = {
-  "Clothing": 2.5,
-  "Men": 2.8,
-  "Women": 2.8,
-  "Children": 1.5,
+const LANDFILL_KG: Record<string, number> = {
+  Clothing: 2.5,
+  Men: 2.8,
+  Women: 2.8,
+  Children: 1.5,
   "Coats & Jackets": 10.0,
-  "Tops": 1.8,
+  Tops: 1.8,
 };
 
-const DEFAULT_CO2 = 3.0;
-const DEFAULT_LANDFILL = 2.0;
+const DFLT_CO2 = 3.0;
+const DFLT_LF = 2.0;
 
-// ======================================================
+/**
+ * POST handler — generates CO₂ / landfill saved reports
+ * (global or per donor)
+ */
 export async function POST(req: Request) {
   try {
-    // 1️⃣ Read donor email from frontend (null = global)
-    const body = await req.json().catch(() => ({}));
-    const donorEmail: string | null = body.donorEmail || null;
+    const { donorEmail } = await req.json().catch(() => ({ donorEmail: null }));
     const isGlobal = !donorEmail;
 
-    // 2️⃣ Open DB
     const db = await openDb();
 
-    // 3️⃣ If per-donor, validate donor exists
-    let donorUser: { User_ID: number; Full_Name: string; Email: string } | null = null;
-
+    // (A) Get donor row if filtering by donor
+    let donorRow: DonorRow | undefined;
     if (!isGlobal) {
-      const result = await db.get<{
-        User_ID: number;
-        Full_Name: string;
-        Email: string;
-      }>(
-        `SELECT User_ID, Full_Name, Email
-         FROM Users
-         WHERE LOWER(Email) = LOWER(?) AND User_Role = 'Donor'`,
+      donorRow = (await db.get(
+        `
+        SELECT dn.Donor_ID, u.Full_Name, u.Email
+        FROM Donor dn
+        JOIN Users u ON u.User_ID = dn.User_ID
+        WHERE LOWER(u.Email) = LOWER(?)
+        `,
         [donorEmail]
-      );
+      )) as DonorRow | undefined;
 
-      donorUser = result || null; // explicitly allow null
-
-      if (!donorUser) {
+      if (!donorRow) {
         return NextResponse.json({ error: "Donor not found" }, { status: 404 });
       }
     }
 
-    // 4️⃣ Get accepted donations
-    const donations: Array<{ Donation_ID: number; Description: string; CategoryName: string }> =
-      (await db.all(
-        `
-        SELECT d.Donation_ID,
-               d.Description,
-               c.Name AS CategoryName
-        FROM Donations d
-        JOIN Categories c ON d.Category_ID = c.CategoryID
-        WHERE d.Status = 'Accepted'
-        ${isGlobal ? "" : "AND d.Donor_ID = ?"}
-        ORDER BY d.Submitted_At DESC
-        `,
-        isGlobal ? [] : [donorUser!.User_ID]
-      )) || [];
+    // (B) Get accepted/distributed donations (global or by donor)
+    const donations = (await db.all(
+      `
+      SELECT d.Donation_ID,
+             d.Description,
+             c.Name AS CategoryName
+      FROM Donations d
+      JOIN Categories c ON c.CategoryID = d.Category_ID
+      WHERE d.Status IN ('Accepted', 'Distributed')
+      ${isGlobal ? "" : "AND d.Donor_ID = ?"}
+      ORDER BY d.Submitted_At DESC
+      `,
+      isGlobal ? [] : [donorRow!.Donor_ID]
+    )) as DonationRow[];
 
-    // 5️⃣ Calculate totals
+    // (C) Calculate CO₂ and landfill savings
     let totalCO2 = 0;
     let landfillSavedKG = 0;
-    const perDonation: {
+    const perDonation: Array<{
       donationId: number;
       description: string;
       type: string;
       co2Saved: number;
-    }[] = [];
+    }> = [];
 
     for (const d of donations) {
       const type = d.CategoryName || "Clothing";
-      const co2 = CO2_KG_BY_CATEGORY[type] ?? DEFAULT_CO2;
-      const landfill = LANDFILL_KG_BY_CATEGORY[type] ?? DEFAULT_LANDFILL;
-
-      totalCO2 += co2;
-      landfillSavedKG += landfill;
+      const c = CO2_KG[type] ?? DFLT_CO2;
+      const l = LANDFILL_KG[type] ?? DFLT_LF;
+      totalCO2 += c;
+      landfillSavedKG += l;
 
       if (!isGlobal) {
         perDonation.push({
           donationId: d.Donation_ID,
           description: d.Description,
           type,
-          co2Saved: co2,
+          co2Saved: c,
         });
       }
     }
 
-    const totalDonations = donations.length; // ✅ fixed: now always an array
-
-    // 6️⃣ Update metrics if global
+    // (D) Upsert daily metrics — safe with fallback for older SQLite
     if (isGlobal) {
       const today = new Date().toISOString().slice(0, 10);
 
-      await db.run(
-        `
-        INSERT INTO Metrics (Metric_Date, Total_Donations, Co2_Saved_KG, Landfill_Saved_KG)
-        VALUES (?, ?, ?, ?)
-        ON CONFLICT(Metric_Date) DO UPDATE SET
-          Total_Donations   = excluded.Total_Donations,
-          Co2_Saved_KG      = excluded.Co2_Saved_KG,
-          Landfill_Saved_KG = excluded.Landfill_Saved_KG
-        `,
-        [
-          today,
-          totalDonations,
-          Number(totalCO2.toFixed(1)),
-          Number(landfillSavedKG.toFixed(1)),
-        ]
-      );
+      try {
+        await db.run(
+          `
+          INSERT INTO Metrics (Metric_Date, Total_Donations, Co2_Saved_KG, Landfill_Saved_KG)
+          VALUES (?, ?, ?, ?)
+          ON CONFLICT(Metric_Date) DO UPDATE SET
+            Total_Donations   = excluded.Total_Donations,
+            Co2_Saved_KG      = excluded.Co2_Saved_KG,
+            Landfill_Saved_KG = excluded.Landfill_Saved_KG
+          `,
+          [
+            today,
+            donations.length,
+            Number(totalCO2.toFixed(1)),
+            Number(landfillSavedKG.toFixed(1)),
+          ]
+        );
+      } catch (e) {
+        // Fallback for older SQLite builds; keeps request successful
+        try {
+          await db.run(
+            `
+            INSERT OR REPLACE INTO Metrics (Metric_Date, Total_Donations, Co2_Saved_KG, Landfill_Saved_KG)
+            VALUES (?, ?, ?, ?)
+            `,
+            [
+              today,
+              donations.length,
+              Number(totalCO2.toFixed(1)),
+              Number(landfillSavedKG.toFixed(1)),
+            ]
+          );
+        } catch (inner) {
+          console.warn("⚠️ Metrics write skipped:", inner);
+        }
+      }
     }
 
-    // 7️⃣ Return data
+    // (E) Final response
     if (isGlobal) {
-      // Global summary
       return NextResponse.json({
         scope: "all",
-        totalDonations,
+        totalDonations: donations.length,
         totalCO2: Number(totalCO2.toFixed(1)),
         landfillSavedKG: Number(landfillSavedKG.toFixed(1)),
       });
     } else {
-      // Per-donor summary
       return NextResponse.json({
         scope: "donor",
-        donor: donorUser!.Full_Name,
-        email: donorUser!.Email,
-        totalDonations,
+        donor: donorRow!.Full_Name,
+        email: donorRow!.Email,
+        totalDonations: donations.length,
         totalCO2: Number(totalCO2.toFixed(1)),
         landfillSavedKG: Number(landfillSavedKG.toFixed(1)),
         donations: perDonation,
       });
     }
   } catch (err) {
-    console.error("❌ CO2 report error:", err);
+    console.error("❌ CO₂ report error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

@@ -1,28 +1,14 @@
-// Returns a list of donors for the Admin report page.
+// app/api/users/donors/route.ts
 import { NextResponse } from "next/server";
 import { openDb } from "@/db/db";
 
 export async function GET() {
-  try {
-
-    const db = await openDb();
-
-    //Pull donors only (role = 'Donor') and is ordered by name so it looks tidy
-   
-    const rows: Array<{ User_ID: number; Full_Name: string; Email: string }> =
-      (await db.all(
-        `
-        SELECT User_ID, Full_Name, Email
-        FROM Users
-        WHERE User_Role = 'Donor'
-        ORDER BY Full_Name ASC 
-        `
-      )) || [];
-
-    // returns it back to the client
-    return NextResponse.json(rows, { status: 200 });
-  } catch (err) {
-    console.error("get '/api/users/donors' error:", err);
-    return NextResponse.json({ error: "There was an error in loading in the donors" }, { status: 500 });
-  }
+  const db = await openDb();
+  const rows = await db.all(
+    `SELECT u.User_ID, u.Full_Name, u.Email
+     FROM Users u
+     JOIN Donor d ON d.User_ID = u.User_ID
+     ORDER BY u.Full_Name`,
+  );
+  return NextResponse.json(rows);
 }

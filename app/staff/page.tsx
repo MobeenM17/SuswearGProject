@@ -1,151 +1,178 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import "./staff.css"; // styles for this page
-import { useRouter } from "next/navigation"; // for redirect after logout
+import "./staff.css";
+import { useRouter } from "next/navigation";
 
-
+/** Row shown in the pending table */
 type PendingDonation = {
-  Donation_ID: number;      // PK from Donations
-  Donor_Name: string;       // Users.Full_Name - joined for full name 
-  Description: string;      // Donations.Description
-  Condition_Grade: string;  // e.g., A/B/C
-  Category: string;         // Categories.Name - joined for catagory name
-  Submitted_At: string;    // Timestamp
+  Donation_ID: number;
+  Donor_Name: string;
+  Description: string;
+  Condition_Grade: string;
+  Category: string;
+  Submitted_At: string;
 };
 
-
+/** Payload sent to /api/donations/review */
 type ReviewAction = {
-  donationId: number;       // the donation which needs to update
-  action: "accept" | "reject"; // staff select which action they want to do 
-  reason?: string;           // optional reason
+  donationId: number;
+  action: "accept" | "reject";
+  reason?: string;
+
+  // used only when accepting (to create/keep Inventory)
+  sizeLabel?: string;
+  genderLabel?: string;
+  seasonType?: string;
 };
 
 export default function StaffDashboard() {
+  // table + ui state
+  const [rows, setRows] = useState<PendingDonation[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [selected, setSelected] = useState<PendingDonation | null>(null);
 
-  const [rows, setRows] = useState<PendingDonation[]>([]); // table data
-  const [loading, setLoading] = useState<boolean>(false);  // spinner
-  const [error, setError] = useState<string>("");          // error message
-  const [message, setMessage] = useState<string>("");      // success message
-  const [selected, setSelected] = useState<PendingDonation | null>(null); // current row
-  const router = useRouter(); // route for logout
+  // accept form fields (inventory attributes)
+  const [sizeLabel, setSizeLabel] = useState("");
+  const [genderLabel, setGenderLabel] = useState("");
+  const [seasonType, setSeasonType] = useState("");
 
-  // Loads the pending donation in the background
+  const router = useRouter();
+
+  // load table once
   useEffect(() => {
-    refreshList(); // call our function that fetches table data
+    refreshList();
   }, []);
 
-  // Gets all the pending donations from /api/donations/list
-  async function refreshList() {
-    setError("");          // clear old errors
-    setMessage("");        // clear old messages
-    setLoading(true);      // show spinner
+  // whenever the selected row changes,
+  // reset the inputs and optionally auto-suggest season from category
+  useEffect(() => {
+    setSizeLabel("");
+    setGenderLabel("");
+    setSeasonType(suggestSeason(selected?.Category ?? ""));
+  }, [selected?.Donation_ID]);
 
+  /** tiny helper: guess a season from category name (tweak as you like) */
+  function suggestSeason(category: string) {
+    const c = category.toLowerCase();
+    if (c.includes("coat") || c.includes("jacket")) return "Winter";
+    if (c.includes("tops") || c.includes("t-shirt")) return "Summer";
+    if (c.includes("footwear")) return "All-Season";
+    return ""; // no guess
+  }
+
+  /** fetch pending donations */
+  async function refreshList() {
+    setError("");
+    setMessage("");
+    setLoading(true);
     try {
-      const res = await fetch("/api/donations/list", { cache: "no-store" }); // always fresh
+      const res = await fetch("/api/donations/list", { cache: "no-store" });
       if (!res.ok) {
-        // Shows an error message if database fails
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.error || "Failed to load donations.");
       }
-      //Gets all the pending rows from backend and reads through them
       const data: PendingDonation[] = await res.json();
-      setRows(data);       // update the table
+      setRows(data);
     } catch (e: any) {
-      // Error message if donation could not be loaded
       setError(e?.message || "Could not load donations.");
     } finally {
-      // hide spinner
       setLoading(false);
     }
   }
 
-  // Sends an accept/reject decision to /api/donations/review
+  /** call review API */
   async function sendDecision(payload: ReviewAction) {
-    setError("");  //clears the messages
+    setError("");
     setMessage("");
-
     try {
       const res = await fetch("/api/donations/review", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.error || "Could not save decision.");
       }
-
-      // Remove that row from the table
+      // remove handled row + reset selection/inputs
       setRows((prev) => prev.filter((r) => r.Donation_ID !== payload.donationId));
-      setSelected(null); 
+      setSelected(null);
+      setSizeLabel("");
+      setGenderLabel("");
+      setSeasonType("");
 
-      // Successful message
       setMessage(
         payload.action === "accept"
           ? "Donation has been accepted and moved to stock."
           : "Donation has been rejected and donor will be notified."
       );
-    } catch (e: any) { // Catches any error messages and shows
+    } catch (e: any) {
       setError(e?.message || "Failed to upload decision.");
     }
   }
 
-  // Logs the user out and redirects to login
-async function handleLogout() {
-  try {
-    const res = await fetch("/api/logout", { method: "POST" });
-    if (res.ok) {
-      router.push("/login"); // Redirect back to login page
-    } else {
-      alert("Failed to logout. Please try again.");
+  /** logout */
+  async function handleLogout() {
+    try {
+      const res = await fetch("/api/logout", { method: "POST" });
+      if (res.ok) router.push("/login");
+      else alert("Failed to logout. Please try again.");
+    } catch (err) {
+      console.error(err);
+      alert("Error logging out. Please try again.");
     }
-  } catch (err) {
-    console.error(err);
-    alert("Error logging out. Please try again.");
   }
-}
 
-
-  // Handles all the accept data;
+  /** accept handler (requires the three fields) */
   async function handleAccept(d: PendingDonation) {
-    // Lightweight confirm to prevent misclicks
+    if (!sizeLabel || !genderLabel || !seasonType) {
+      alert("Please select Size, Gender and Season before accepting.");
+      return;
+    }
     const ok = confirm(`Accept donation #${d.Donation_ID} from ${d.Donor_Name}?`);
     if (!ok) return;
 
-    // Gives staff a chance to add an optional note
-    const reason = prompt("Optional note for record (press Cancel to skip):") || undefined; // makes it optional
+    const reason = prompt("Optional note for record (press Cancel to skip):") || undefined;
 
-    // Gets the API
-    await sendDecision({ donationId: d.Donation_ID, action: "accept", reason });
+    await sendDecision({
+      donationId: d.Donation_ID,
+      action: "accept",
+      reason,
+      sizeLabel,
+      genderLabel,
+      seasonType,
+    });
   }
 
-  // Handles all the reject data
+  /** reject handler */
   async function handleReject(d: PendingDonation) {
-    // Add a reasoning - not optional
     const reason = prompt(`Reason for rejecting donation #${d.Donation_ID}? (optional)`) || undefined;
-    await sendDecision({ donationId: d.Donation_ID, action: "reject", reason: reason }); // puts it all together and sends the data
+    await sendDecision({ donationId: d.Donation_ID, action: "reject", reason });
   }
-//page design
+
+  const acceptDisabled =
+    !selected || !sizeLabel || !genderLabel || !seasonType;
+
   return (
     <div className="staff-wrap">
-      {/* --- Sticky header with actions --- */}
+      {/* header */}
       <header className="staff-header">
         <div className="left">
-        <h1>Staff Dashboard</h1>
-        <a className="back-link" href="/">← Back to homepage</a>
-      </div>
-      <div className="right">
-        <button className="ghost-btn" onClick={refreshList} disabled={loading}>
-          {loading ? "Refreshing…" : "Refresh"}
-        </button>
-        <button className="outline-btn logout-btn" onClick={handleLogout}>
-          Logout </button>
-          </div>
-        </header>
+          <h1>Staff Dashboard</h1>
+          <a className="back-link" href="/">← Back to homepage</a>
+        </div>
+        <div className="right">
+          <button className="ghost-btn" onClick={refreshList} disabled={loading}>
+            {loading ? "Refreshing…" : "Refresh"}
+          </button>
+          <button className="outline-btn logout-btn" onClick={handleLogout}>Logout</button>
+        </div>
+      </header>
 
-      {/*Info / error banners*/}
+      {/* banners */}
       {message && (
         <div className="alert alert-success">
           {message}
@@ -160,7 +187,7 @@ async function handleLogout() {
       )}
 
       <div className="grid">
-        {/* Creates table for pending donation */}
+        {/* pending table */}
         <section className="card">
           <div className="table-head">
             <h2>Pending Donations</h2>
@@ -196,7 +223,9 @@ async function handleLogout() {
                       <td>{d.Submitted_At ? new Date(d.Submitted_At).toLocaleDateString() : "—"}</td>
                       <td className="actions">
                         <button className="outline-btn" onClick={() => setSelected(d)}>View</button>
-                        <button className="primary-btn" onClick={() => handleAccept(d)}>Accept</button>
+                        <button className="primary-btn" onClick={() => handleAccept(d)} disabled={acceptDisabled}>
+                          Accept
+                        </button>
                         <button className="ghost-btn danger" onClick={() => handleReject(d)}>Reject</button>
                       </td>
                     </tr>
@@ -207,7 +236,7 @@ async function handleLogout() {
           </div>
         </section>
 
-        {/*  Selected row - details panel  */}
+        {/* details + accept form */}
         <aside className="card details">
           <h2>Details</h2>
 
@@ -224,16 +253,62 @@ async function handleLogout() {
                 {selected.Description}
               </p>
 
-              <div className="button-row">
-                <button className="primary-btn" onClick={() => handleAccept(selected)}>Accept</button>
-                <button className="ghost-btn danger" onClick={() => handleReject(selected)}>Reject</button>
-                <button className="ghost-btn" onClick={() => setSelected(null)}>Close</button>
+              <div className="full">
+                <label className="muted">Inventory details (used only when you Accept)</label>
+              </div>
 
+              <label>
+                Size label
+                <input
+                  className="textin"
+                  placeholder="e.g., S / M / L / 10 / etc."
+                  value={sizeLabel}
+                  onChange={(e) => setSizeLabel(e.target.value)}
+                />
+              </label>
+
+              <label>
+                Gender label
+                <select
+                  className="selectin"
+                  value={genderLabel}
+                  onChange={(e) => setGenderLabel(e.target.value)}
+                >
+                  <option value="">(none)</option>
+                  <option value="Men">Men</option>
+                  <option value="Women">Women</option>
+                  <option value="Unisex">Unisex</option>
+                  <option value="Children">Children</option>
+                </select>
+              </label>
+
+              <label>
+                Season
+                <select
+                  className="selectin"
+                  value={seasonType}
+                  onChange={(e) => setSeasonType(e.target.value)}
+                >
+                  <option value="">(none)</option>
+                  <option value="Winter">Winter</option>
+                  <option value="Spring">Spring</option>
+                  <option value="Summer">Summer</option>
+                  <option value="Autumn">Autumn</option>
+                  <option value="All-Season">All-Season</option>
+                </select>
+              </label>
+
+              <div className="button-row">
+                <button className="primary-btn" onClick={() => handleAccept(selected!)} disabled={acceptDisabled}>
+                  Accept
+                </button>
+                <button className="ghost-btn danger" onClick={() => handleReject(selected!)}>Reject</button>
+                <button className="ghost-btn" onClick={() => setSelected(null)}>Close</button>
               </div>
 
               <small className="muted">
-                Accept = marks as <b>Accepted</b> and (later) staff can add to <b>Inventory</b>.  
-                Reject = marks as <b>Rejected</b> and (later) creates a <b>Notification</b> for the donor. 
+                Accept marks the donation as <b>Accepted</b>, writes a <b>Review</b>, and creates/keeps an
+                <b> Inventory</b> record using the Size/Gender/Season above. Reject writes a Review only.
               </small>
             </div>
           )}

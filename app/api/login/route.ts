@@ -1,19 +1,21 @@
-
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { openDb } from "@/db/db";
 
+/**
+ * Body = { email, password }
+ * - Validates credentials against Users table
+ *      session_role   = "Admin" | "Staff" | "Donor" - 
+ *      session_user_id = the numeric Users.User_ID - ID
+ */
 export async function POST(req: Request) {
   try {
-    // read JSON data
     const { email, password } = await req.json();
 
-    // safety check
     if (!email || !password) {
       return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
     }
 
-    // opens the database and gets the user row by email
     const db = await openDb();
     const user = await db.get<{
       User_ID: number;
@@ -22,34 +24,22 @@ export async function POST(req: Request) {
       User_Role: "Admin" | "Donor" | "Staff";
       Password_Hash: string;
     }>(
-      `
-      SELECT User_ID, Full_Name, Email, User_Role, Password_Hash
-      FROM Users
-      WHERE LOWER(Email) = LOWER(?)
-      `,
+      `SELECT User_ID, Full_Name, Email, User_Role, Password_Hash
+       FROM Users
+       WHERE LOWER(Email) = LOWER(?)`,
       [email]
     );
 
-    // invalid user detail: 
-    if (!user) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-    }
+    if (!user) return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
 
-    // compare the password in two possible ways:
-    // 1) new registered details: the stored value is a bcrypt hash
-    // 2) old login in details in db: treat it as a simple seed/plain string
-    const storedPassword = user.Password_Hash ?? "";
-    let checkPassword = false;
-    if (storedPassword.startsWith("$2")) {
-      checkPassword = await bcrypt.compare(password, storedPassword);
-    } else {
-      checkPassword = password === storedPassword;
-    }
-    if (!checkPassword) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-    }
+    const stored = user.Password_Hash ?? "";
+    const ok = stored.startsWith("$2")
+      ? await bcrypt.compare(password, stored) // bcrypt hash pass
+      : password === stored;                   // seed/plain (for the old legacy passwords)
 
-    // creates a safe object with the user details to send back to the client (no password included)
+    if (!ok) return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+
+    
     const safeUser = {
       User_ID: user.User_ID,
       Full_Name: user.Full_Name,
@@ -57,13 +47,22 @@ export async function POST(req: Request) {
       User_Role: user.User_Role,
     };
 
-    // set a cookie (HttpOnly) that only stores the user's role.
+    // Set BOTH cookies.
     const res = NextResponse.json({ message: "Login successful", user: safeUser }, { status: 200 });
+
     res.cookies.set("session_role", user.User_Role, {
-      httpOnly: true,     // - HttpOnly so its more secure and javascript cant read 
-      sameSite: "lax", // normal navigation keeps the cookie
+      httpOnly: true,
+      sameSite: "lax",
       path: "/",
       maxAge: 60 * 60 * 24, // 1 day
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    res.cookies.set("session_user_id", String(user.User_ID), {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24,
       secure: process.env.NODE_ENV === "production",
     });
 
