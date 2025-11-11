@@ -36,7 +36,7 @@ export default function AdminDashboard() {
           <div className="card">
             <h3>Create Staff Account</h3>
             <p>Add new staff members to help manage users and sustainability tasks.</p>
-            <Link href="/admin/create-staff" className="primary-btn">Create Staff</Link>
+           <Link href="/admin/create-staff" className="primary-btn">Create Staff</Link>
           </div>
 
           {/* Promote Donor */}
