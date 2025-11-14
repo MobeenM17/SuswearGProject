@@ -1,17 +1,19 @@
-// Simple database helper for connecting to SQLite
-
+// db.ts
 import sqlite3 from "sqlite3";
 import { open, Database } from "sqlite";
 
-// Reuses the same connection to save performance
 let _db: Database | null = null;
 
-// Opens the database file and returns the connection
 export async function openDb() {
-  if (_db) return _db; // if already open, reuse it
+  if (_db) return _db;
+
   _db = await open({
-    filename: "./db/SustainWear.db", // path to your SQLite file
+    filename: "./db/SustainWear.db",
     driver: sqlite3.Database,
   });
+
+  // Wait 5 seconds if the DB is busy
+  await _db.run("PRAGMA busy_timeout = 5000");
+
   return _db;
 }

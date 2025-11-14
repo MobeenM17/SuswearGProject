@@ -1,93 +1,69 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
-import { useRouter } from "next/navigation"; // ✅ Added for navigation
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import "./donor.css";
 
-type DonationStatus = "pending" | "accepted" | "rejected" | "distributed";
+type DonationStatus = "Pending" | "Accepted" | "Rejected" | "Distributed";
 
-type Donation = {
-  id: string;
-  description: string;
-  category: string;
-  weightKg: number;
-  status: DonationStatus;
-  submittedAt: string; // ISO
-  photoUrl?: string;
-};
+interface Donation {
+  Donation_ID: number;
+  Description: string;
+  Category: string;
+  WeightKg: number | null;
+  Status: DonationStatus;
+  Submitted_At: string;
+}
 
 const CATEGORIES = ["Tops", "Bottoms", "Outerwear", "Footwear", "Accessories", "Other"] as const;
 
 export default function DonorDashboard() {
-  const router = useRouter(); // ✅ Initialize router for redirect
+  const router = useRouter();
 
-  // -------- Submit form state --------
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<(typeof CATEGORIES)[number] | "">("");
   const [weightKg, setWeightKg] = useState<number | "">("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [history, setHistory] = useState<Donation[]>([]);
 
-  // -------- Donation history (temporary mock) --------
-  const [history, setHistory] = useState<Donation[]>([
-    {
-      id: "DN-001",
-      description: "Blue denim jacket",
-      category: "Outerwear",
-      weightKg: 1.2,
-      status: "accepted",
-      submittedAt: "2025-10-02T10:31:00Z",
-      photoUrl: "/placeholder-denim.png",
-    },
-    {
-      id: "DN-002",
-      description: "Black trainers (size 9)",
-      category: "Footwear",
-      weightKg: 0.9,
-      status: "distributed",
-      submittedAt: "2025-10-20T14:12:00Z",
-    },
-    {
-      id: "DN-003",
-      description: "Mixed tees (x5)",
-      category: "Tops",
-      weightKg: 1.1,
-      status: "pending",
-      submittedAt: "2025-11-02T09:05:00Z",
-    },
-  ]);
+  // -------- Load donor history --------
+  const loadHistory = async () => {
+    try {
+      const res = await fetch("/api/donations/list-my", { cache: "no-store", credentials: "include" });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to load donation history");
+      }
+      const data: Donation[] = await res.json();
+      setHistory(data);
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : "Unknown error";
+      console.error(errorMsg);
+      setMessage({ type: "error", text: errorMsg });
+    }
+  };
 
-  // -------- Filters --------
-  const [statusFilter, setStatusFilter] = useState<"" | DonationStatus>("");
-  const [fromDate, setFromDate] = useState<string>("");
-  const [toDate, setToDate] = useState<string>("");
+  useEffect(() => {
+    loadHistory();
+  }, []);
 
-  const filteredHistory = useMemo(() => {
-    return history.filter((d) => {
-      if (statusFilter && d.status !== statusFilter) return false;
-      const t = new Date(d.submittedAt).getTime();
-      if (fromDate && t < new Date(fromDate).getTime()) return false;
-      if (toDate && t > new Date(toDate).getTime()) return false;
-      return true;
-    });
-  }, [history, statusFilter, fromDate, toDate]);
-
-  // -------- Impact calculation --------
-  const totalItems = filteredHistory.length;
-  const totalWeight = filteredHistory.reduce((acc, d) => acc + (d.weightKg || 0), 0);
+  // -------- Impact calculations --------
+  const totalItems = history.length;
+  const totalWeight = history.reduce((acc, d) => acc + (d.WeightKg ?? 0), 0);
   const co2Saved = +(totalWeight * 2.5).toFixed(2);
 
-  // -------- Image and form handlers --------
-  const onPhotoChange = (f: File | null) => {
+  // -------- Image handler --------
+  const onPhotoChange = (file: File | null) => {
     setPhotoFile(null);
-    if (!f) return;
-    const ok = ["image/jpeg", "image/png"].includes(f.type);
-    if (!ok) {
-      setMessage({ type: "error", text: "The image file type must be JPG or PNG." });
+    if (!file) return;
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      setMessage({ type: "error", text: "Image must be JPG or PNG." });
       return;
     }
+    setPhotoFile(file);
     setMessage(null);
-    setPhotoFile(f);
   };
 
   const resetForm = () => {
@@ -97,57 +73,65 @@ export default function DonorDashboard() {
     setPhotoFile(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // -------- Submit donation --------
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!description.trim() || !category || !weightKg || !photoFile) {
-      setMessage({
-        type: "error",
-        text: "You must complete all the fields (including a JPG/PNG image) to submit your donation.",
-      });
+      setMessage({ type: "error", text: "You must complete all fields including an image." });
       return;
     }
 
-    const newDonation: Donation = {
-      id: `DN-${String(history.length + 1).padStart(3, "0")}`,
-      description: description.trim(),
-      category,
-      weightKg: typeof weightKg === "number" ? weightKg : parseFloat(weightKg),
-      status: "pending",
-      submittedAt: new Date().toISOString(),
-      photoUrl: URL.createObjectURL(photoFile),
-    };
+    try {
+      const formData = new FormData();
+      formData.append("description", description);
+      formData.append("categoryId", category);
+      formData.append("weightKg", typeof weightKg === "number" ? weightKg.toString() : String(weightKg));
+      formData.append("photo", photoFile);
 
-    setHistory((h) => [newDonation, ...h]);
-    setMessage({ type: "success", text: "This Donation has been successfully submitted." });
-    resetForm();
+      const res = await fetch("/api/donations/create", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to submit donation");
+
+      setMessage({ type: "success", text: "Donation submitted successfully." });
+      resetForm();
+
+      // Refresh donation history immediately
+      await loadHistory();
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : "Unknown error";
+      console.error(errorMsg);
+      setMessage({ type: "error", text: errorMsg });
+    }
   };
 
-  //LOGOUT FUNCTION
-  async function handleLogout() {
+  // -------- Logout --------
+  const handleLogout = async () => {
     try {
-      await fetch("/api/logout", { method: "POST" });
-      router.push("/"); // back to homepage
+      await fetch("/api/logout", { method: "POST", credentials: "include" });
+      router.push("/login");
     } catch {
-      alert("Failed to log out. Please try again.");
+      alert("Failed to log out.");
     }
-  }
+  };
 
   return (
     <div className="donor-wrap Main-ContainerBox">
-      {/* ---------- Header Section ---------- */}
       <header className="donor-header">
         <div className="header-left">
-          <a className="back-link" href="/">← Back to homepage</a>
+          <span className="back-link" onClick={() => router.push("/")}>← Back to homepage</span>
           <h1>Donor Dashboard</h1>
         </div>
         <div className="header-actions">
-          <a className="outline-btn" href="/donor">Dashboard</a>
+          <span className="outline-btn" onClick={() => router.push("/donor")}>Dashboard</span>
           <button className="ghost-btn" onClick={handleLogout}>Logout</button>
         </div>
       </header>
 
-      {/* ---------- Alerts ---------- */}
       {message && (
         <div className={`alert ${message.type === "success" ? "alert-success" : "alert-error"}`}>
           {message.text}
@@ -155,7 +139,6 @@ export default function DonorDashboard() {
         </div>
       )}
 
-      {/* ---------- Grid Layout ---------- */}
       <div className="grid">
         {/* Submit Donation */}
         <section className="card">
@@ -163,54 +146,25 @@ export default function DonorDashboard() {
           <form onSubmit={handleSubmit} className="form">
             <label className="label">
               <span>Description</span>
-              <textarea
-                className="input"
-                placeholder="e.g. 'Winter coat, good condition'"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={3}
-                required
-              />
+              <textarea className="input" placeholder="e.g. Winter coat, good condition" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} required />
             </label>
 
             <label className="label">
               <span>Category</span>
-              <select
-                className="input"
-                value={category}
-                onChange={(e) => setCategory(e.target.value as any)}
-                required
-              >
-                <option value="">Select a category…</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
+              <select className="input" value={category} onChange={(e) => setCategory(e.target.value as (typeof CATEGORIES)[number])} required>
+                <option value="">Select…</option>
+                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </label>
 
             <label className="label">
               <span>Weight (kg)</span>
-              <input
-                className="input"
-                type="number"
-                min={0}
-                step="0.1"
-                value={weightKg}
-                onChange={(e) => setWeightKg(e.target.value === "" ? "" : Number(e.target.value))}
-                placeholder="e.g. 1.2"
-                required
-              />
+              <input className="input" type="number" min={0} step={0.1} value={weightKg} onChange={(e) => setWeightKg(e.target.value === "" ? "" : Number(e.target.value))} required />
             </label>
 
             <label className="label">
               <span>Upload Item Image</span>
-              <input
-                className="input file-input"
-                type="file"
-                accept="image/png,image/jpeg"
-                onChange={(e) => onPhotoChange(e.target.files?.[0] ?? null)}
-                required
-              />
+              <input className="input file-input" type="file" accept="image/png,image/jpeg" onChange={(e) => onPhotoChange(e.target.files?.[0] ?? null)} required />
               <small className="hint">JPG or PNG only.</small>
             </label>
 
@@ -222,68 +176,20 @@ export default function DonorDashboard() {
         <section className="card impact">
           <h2>Your Impact</h2>
           <div className="stats">
-            <div className="stat">
-              <div className="stat-value">{totalItems}</div>
-              <div className="stat-label">Total items</div>
-            </div>
-            <div className="stat">
-              <div className="stat-value">{totalWeight.toFixed(1)} kg</div>
-              <div className="stat-label">Total weight</div>
-            </div>
-            <div className="stat">
-              <div className="stat-value">{co2Saved} kg</div>
-              <div className="stat-label">Estimated CO₂ saved</div>
-            </div>
+            <div className="stat"><div className="stat-value">{totalItems}</div><div className="stat-label">Total items</div></div>
+            <div className="stat"><div className="stat-value">{totalWeight.toFixed(1)} kg</div><div className="stat-label">Total weight</div></div>
+            <div className="stat"><div className="stat-value">{co2Saved} kg</div><div className="stat-label">Estimated CO₂ saved</div></div>
           </div>
-          <p className="muted">*CO₂ estimate is indicative and will be replaced with real metrics later.</p>
+          <p className="muted">*CO₂ estimate is approximate.</p>
         </section>
 
-        {/* History */}
+        {/* Donation History */}
         <section className="card history">
-          <div className="history-head">
-            <h2>Donation History</h2>
-            <div className="filters">
-              <select
-                className="input small"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as any)}
-                aria-label="Filter by status"
-              >
-                <option value="">All statuses</option>
-                <option value="pending">Pending</option>
-                <option value="accepted">Accepted</option>
-                <option value="rejected">Rejected</option>
-                <option value="distributed">Distributed</option>
-              </select>
-
-              <input
-                className="input small"
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                aria-label="From date"
-              />
-              <input
-                className="input small"
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                aria-label="To date"
-              />
-              <button
-                className="ghost-btn"
-                onClick={() => { setStatusFilter(""); setFromDate(""); setToDate(""); }}
-                type="button"
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-
-          {filteredHistory.length === 0 ? (
-            <div className="empty">You haven’t made a donation yet.</div>
+          <h2>Donation History</h2>
+          {history.length === 0 ? (
+            <div className="empty">No donations found.</div>
           ) : (
-            <div className="table-wrap" role="region" aria-label="Donation history">
+            <div className="table-wrap">
               <table className="table">
                 <thead>
                   <tr>
@@ -293,23 +199,17 @@ export default function DonorDashboard() {
                     <th>Weight</th>
                     <th>Status</th>
                     <th>Submitted</th>
-                    <th>Photo</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredHistory.map((d) => (
-                    <tr key={d.id}>
-                      <td>{d.id}</td>
-                      <td>{d.description}</td>
-                      <td>{d.category}</td>
-                      <td>{d.weightKg.toFixed(1)} kg</td>
-                      <td><span className={`badge ${d.status}`}>{d.status}</span></td>
-                      <td>{new Date(d.submittedAt).toLocaleDateString()}</td>
-                      <td>
-                        {d.photoUrl
-                          ? <img src={d.photoUrl} alt="" className="thumb" />
-                          : <span className="muted">Image not available</span>}
-                      </td>
+                  {history.map((d, idx) => (
+                    <tr key={`${d.Donation_ID}-${idx}`}>
+                      <td>{d.Donation_ID}</td>
+                      <td>{d.Description}</td>
+                      <td>{d.Category}</td>
+                      <td>{d.WeightKg !== null ? d.WeightKg.toFixed(1) : "-"}</td>
+                      <td><span className={`badge ${d.Status.toLowerCase()}`}>{d.Status}</span></td>
+                      <td>{new Date(d.Submitted_At).toLocaleDateString()}</td>
                     </tr>
                   ))}
                 </tbody>
