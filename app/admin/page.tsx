@@ -1,11 +1,22 @@
 "use client";
 
-
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import "./admin.css";
 
 export default function AdminDashboard() {
   const adminName = "Alice"; // session later
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/logout", { method: "POST", credentials: "include" });
+      router.push("/login");
+    } catch (err) {
+      console.error("Logout failed", err);
+      alert("Failed to log out.");
+    }
+  };
 
   return (
     <div className="admin-wrap">
@@ -16,6 +27,11 @@ export default function AdminDashboard() {
             <span className="back-link">
               Welcome back, <strong>{adminName}</strong> 👋
             </span>
+          </div>
+
+          {/* I Added Logout Button */}
+          <div className="header-actions">
+            <button className="ghost-btn" onClick={handleLogout}>Logout</button>
           </div>
         </header>
 
@@ -36,7 +52,7 @@ export default function AdminDashboard() {
           <div className="card">
             <h3>Create Staff Account</h3>
             <p>Add new staff members to help manage users and sustainability tasks.</p>
-           <Link href="/admin/create-staff" className="primary-btn">Create Staff</Link>
+            <Link href="/admin/create-staff" className="primary-btn">Create Staff</Link>
           </div>
 
           {/* Promote Donor */}

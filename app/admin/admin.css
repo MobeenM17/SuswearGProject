@@ -14,7 +14,41 @@
 }
 
 .dashboard-bubble:hover {
-  box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== Admin Header ===== */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--edge);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Logout Button (Ghost Style Matching Donor Dashboard) */
+.ghost-btn {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ghost-btn:hover {
+  background: var(--accent);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* Welcome Section */
