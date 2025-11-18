@@ -9,12 +9,13 @@ type PendingDonation = {
   Donation_ID: number;
   Donor_Name: string;
   Description: string;
-  Condition_Grade: string;
+  Condition_Grade: string | null;
   Category: string;
   Submitted_At: string;
+  PhotoUrl?: string | null; 
 };
 
-/** Payload sent to /api/donations/review */
+/** sent to /api/donations/review */
 type ReviewAction = {
   donationId: number;
   action: "accept" | "reject";
@@ -24,6 +25,7 @@ type ReviewAction = {
   sizeLabel?: string;
   genderLabel?: string;
   seasonType?: string;
+  conditionGrade?: string;
 };
 
 export default function StaffDashboard() {
@@ -34,27 +36,29 @@ export default function StaffDashboard() {
   const [message, setMessage] = useState("");
   const [selected, setSelected] = useState<PendingDonation | null>(null);
 
-  // accept form fields (inventory attributes)
+  // accept form fields (inventory)
   const [sizeLabel, setSizeLabel] = useState("");
   const [genderLabel, setGenderLabel] = useState("");
   const [seasonType, setSeasonType] = useState("");
-
+  const [conditionGrade, setConditionGrade] = useState("");
+ 
   const router = useRouter();
 
-  // load table once
+  // loads the table
   useEffect(() => {
     refreshList();
   }, []);
 
   // whenever the selected row changes,
-  // reset the inputs and optionally auto-suggest season from category
+  // reset the inputs 
   useEffect(() => {
     setSizeLabel("");
     setGenderLabel("");
     setSeasonType(suggestSeason(selected?.Category ?? ""));
+    setConditionGrade(selected?.Condition_Grade || "");
   }, [selected?.Donation_ID]);
 
-  /** tiny helper: guess a season from category name (tweak as you like) */
+  /** auto season-catagory - guesses the season from category name */
   function suggestSeason(category: string) {
     const c = category.toLowerCase();
     if (c.includes("coat") || c.includes("jacket")) return "Winter";
@@ -63,7 +67,7 @@ export default function StaffDashboard() {
     return ""; // no guess
   }
 
-  /** fetch pending donations */
+  /** fetch pending donations for staffs */
   async function refreshList() {
     setError("");
     setMessage("");
@@ -83,7 +87,7 @@ export default function StaffDashboard() {
     }
   }
 
-  /** call review API */
+  /** call Review API */
   async function sendDecision(payload: ReviewAction) {
     setError("");
     setMessage("");
@@ -97,12 +101,13 @@ export default function StaffDashboard() {
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.error || "Could not save decision.");
       }
-      // remove handled row + reset selection/inputs
+      // reset selection/inputs and removes handled row
       setRows((prev) => prev.filter((r) => r.Donation_ID !== payload.donationId));
       setSelected(null);
       setSizeLabel("");
       setGenderLabel("");
       setSeasonType("");
+      setConditionGrade("");
 
       setMessage(
         payload.action === "accept"
@@ -144,6 +149,7 @@ export default function StaffDashboard() {
       sizeLabel,
       genderLabel,
       seasonType,
+      conditionGrade,
     });
   }
 
@@ -223,9 +229,7 @@ export default function StaffDashboard() {
                       <td>{d.Submitted_At ? new Date(d.Submitted_At).toLocaleDateString() : "—"}</td>
                       <td className="actions">
                         <button className="outline-btn" onClick={() => setSelected(d)}>View</button>
-                        <button className="primary-btn" onClick={() => handleAccept(d)} disabled={acceptDisabled}>
-                          Accept
-                        </button>
+                        <button className="primary-btn" onClick={() => setSelected(d)}>Review</button>
                         <button className="ghost-btn danger" onClick={() => handleReject(d)}>Reject</button>
                       </td>
                     </tr>
@@ -252,6 +256,17 @@ export default function StaffDashboard() {
                 <strong>Description:</strong><br />
                 {selected.Description}
               </p>
+              {selected.PhotoUrl && (
+                <div className="full">
+                  <strong>Photo Preview:</strong>
+                  <div className="photo-wrapper">
+                    <img src={selected.PhotoUrl}
+                    alt={`Donation ${selected.Donation_ID}`}
+                    className="donation-photo"
+                    />
+                  </div>
+                </div>
+              )}
 
               <div className="full">
                 <label className="muted">Inventory details (used only when you Accept)</label>
@@ -279,6 +294,19 @@ export default function StaffDashboard() {
                   <option value="Women">Women</option>
                   <option value="Unisex">Unisex</option>
                   <option value="Children">Children</option>
+                </select>
+              </label>
+
+              <label className="full">
+                Condition Grade
+                <select className="selectin"
+                value={conditionGrade}
+                onChange={(e) => setConditionGrade(e.target.value)}
+                >
+                  <option value="">(not set)</option>
+                  <option value="A">(A - Like New)</option>
+                  <option value="B">(B - Good / Slightly Worn)</option>
+                  <option value="C">(C - Worn)</option>
                 </select>
               </label>
 

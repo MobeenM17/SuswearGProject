@@ -72,7 +72,7 @@ export default function Home(){
             <section>
                 <h2>Popular Categories</h2>
                 {(() => {
-                    const categories = ["Tops","Coats","Jeans","Dresses","Jumpers","Kids","Seasoned"];
+                    const categories = ["Clothing","Men","Women","Children","Coats & Jackets","Tops"];
                     return ( 
                     <div className="Category-lists"> 
                     {categories.map((name) => (

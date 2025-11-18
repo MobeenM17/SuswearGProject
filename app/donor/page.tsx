@@ -13,9 +13,10 @@ interface Donation {
   WeightKg: number | null;
   Status: DonationStatus;
   Submitted_At: string;
+  PhotoUrl?: string | null; 
 }
 
-const CATEGORIES = ["Tops", "Bottoms", "Outerwear", "Footwear", "Accessories", "Other"] as const;
+const CATEGORIES = ["Clothing", "Men", "Women", "Children", "Coats & Jackets", "Tops"] as const;
 
 export default function DonorDashboard() {
   const router = useRouter();
@@ -199,6 +200,7 @@ export default function DonorDashboard() {
                     <th>Weight</th>
                     <th>Status</th>
                     <th>Submitted</th>
+                    <th>Photo</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -210,6 +212,15 @@ export default function DonorDashboard() {
                       <td>{d.WeightKg !== null ? d.WeightKg.toFixed(1) : "-"}</td>
                       <td><span className={`badge ${d.Status.toLowerCase()}`}>{d.Status}</span></td>
                       <td>{new Date(d.Submitted_At).toLocaleDateString()}</td>
+                      <td>{d.PhotoUrl ? (
+                        <img src={d.PhotoUrl}
+                        alt={`Donation ${d.Donation_ID}`}
+                        className="thumb"
+                        />
+                      ):(
+                        <span className="muted">No Image</span>
+                      )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

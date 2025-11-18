@@ -1,3 +1,4 @@
+//app/api/donations/list-my/route.ts
 import { NextResponse } from "next/server";
 import { openDb } from "@/db/db";
 
@@ -8,7 +9,7 @@ interface Donation {
   WeightKg: number;
   Status: string;
   Submitted_At: string;
-  PhotoUrl?: string;
+  PhotoUrl?: string | null;
 }
 
 export async function GET(req: Request) {
@@ -29,10 +30,15 @@ export async function GET(req: Request) {
     );
     if (!donor) return NextResponse.json({ error: "Donor not found" }, { status: 404 });
 
-    // --- Get Donations with Photo URL ---
+    // --- Get Donations with Photo URL (from donation table)---
     const donations = await db.all<Donation[]>(
-      `SELECT d.Donation_ID, d.Description, c.Name AS Category, d.WeightKg, d.Status,
-              d.Submitted_At, pd.Photo_URL AS PhotoUrl
+      `SELECT d.Donation_ID, 
+              d.Description, 
+              c.Name AS Category, 
+              d.WeightKg, 
+              d.Status,
+              d.Submitted_At, 
+              pd.Photo_URL AS PhotoUrl
        FROM Donations d
        JOIN Categories c ON c.CategoryID = d.Category_ID
        LEFT JOIN PhotoDonation pd ON pd.Donation_ID = d.Donation_ID

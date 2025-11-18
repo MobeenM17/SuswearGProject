@@ -1,3 +1,4 @@
+//app/api/donations/review/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { openDb } from "@/db/db";
 
@@ -23,6 +24,8 @@ export async function PUT(req: NextRequest) {
     const sizeLabel: string | undefined = body?.sizeLabel ?? undefined;
     const genderLabel: string | undefined = body?.genderLabel ?? undefined;
     const seasonType: string | undefined = body?.seasonType ?? undefined;
+    const conditionGrade: string | undefined = body?.conditionGrade ?? undefined;
+
 
     if (!donationId || !action) {
       return NextResponse.json(
@@ -39,6 +42,13 @@ export async function PUT(req: NextRequest) {
       `UPDATE Donations SET Status = ?, Submitted_At = Submitted_At WHERE Donation_ID = ?`,
       [newStatus, donationId]
     );
+
+    await db.run(
+
+      `UPDATE Donations SET Status = ?, Condition_Grade = COALESCE (?, Condition_Grade) WHERE Donation_ID = ?`, 
+      [newStatus, conditionGrade ?? null,donationId]
+
+    )
 
     // Insert a review 
     await db.run(
