@@ -45,8 +45,8 @@ export async function PUT(req: NextRequest) {
 
     await db.run(
 
-      `UPDATE Donations SET Status = ?, Condition_Grade = COALESCE (?, Condition_Grade) WHERE Donation_ID = ?`, 
-      [newStatus, conditionGrade ?? null,donationId]
+      `UPDATE Donations SET Condition_Grade = COALESCE (?, Condition_Grade) WHERE Donation_ID = ?`, 
+      [conditionGrade ?? null, donationId]
 
     )
 
@@ -79,7 +79,7 @@ export async function PUT(req: NextRequest) {
                Season_Type = COALESCE(?, Season_Type),
                Status = 'InStock',
                Updated_At = datetime('now')
-         WHERE Donation_ID = ?`,
+         WHERE Donation_ID = ?`, /* ? is used so i can store it at the end when adding values*/
         [sizeLabel ?? null, genderLabel ?? null, seasonType ?? null, donationId]
       );
     }
@@ -91,15 +91,15 @@ export async function PUT(req: NextRequest) {
          FROM Donations d
          JOIN Donor dn   ON dn.Donor_ID = d.Donor_ID
          JOIN Users u    ON u.User_ID   = dn.User_ID
-       WHERE d.Donation_ID = ?`,
+       WHERE d.Donation_ID = ?`, /* ? is used so i can store it at the end when adding values*/
       [donationId]
     );
 
     if (donorUser?.User_ID) {
       await db.run(
         `INSERT INTO Notifications (User_ID, Donation_ID, Status, Generated_At)
-         VALUES (?, ?, 'Sent', datetime('now'))`,
-        [donorUser.User_ID, donationId]
+         VALUES (?, ?, ?, datetime('now'))`,
+        [donorUser.User_ID, donationId, newStatus]
       );
     }
 
