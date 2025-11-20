@@ -93,8 +93,9 @@ export default function DonorDashboard() {
         }
         const data: NotificationRow[] = await res.json();
         setNotifications(data);
-      } catch (e: any) {
-        setNotifError(e?.message || "Error loading notifications");
+      } catch (e: unknown) {
+        const errorMsg = e instanceof Error ? e.message : "Error loading notifications";
+        setNotifError(errorMsg);
       } finally {
         setNotifLoading(false);
       }
@@ -207,6 +208,15 @@ export default function DonorDashboard() {
           >
             Notifications
           </button>
+
+          <button
+            type="button"
+            className="outline-btn"
+            onClick={() => router.push("/donor/sent")}
+           >
+            Sent Donations
+          </button>
+
           <button className="ghost-btn" onClick={handleLogout}>
             Logout
           </button>

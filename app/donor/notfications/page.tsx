@@ -25,8 +25,9 @@ export default function DonorNotifications() {
         }
         const data: NotificationRow[] = await res.json();
         setRows(data);
-      } catch (e: any) {
-        setError(e?.message || "Error loading notifications");
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : "Error loading notifications";
+        setError(message);
       } finally {
         setLoading(false);
       }

@@ -1,4 +1,3 @@
-//app/staff/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -30,28 +29,23 @@ type ReviewAction = {
 };
 
 export default function StaffDashboard() {
-  // table + ui state
   const [rows, setRows] = useState<PendingDonation[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [selected, setSelected] = useState<PendingDonation | null>(null);
 
-  // accept form fields (inventory)
   const [sizeLabel, setSizeLabel] = useState("");
   const [genderLabel, setGenderLabel] = useState("");
   const [seasonType, setSeasonType] = useState("");
   const [conditionGrade, setConditionGrade] = useState("");
- 
+
   const router = useRouter();
 
-  // loads the table
   useEffect(() => {
     refreshList();
   }, []);
 
-  // whenever the selected row changes,
-  // reset the inputs 
   useEffect(() => {
     setSizeLabel("");
     setGenderLabel("");
@@ -59,16 +53,14 @@ export default function StaffDashboard() {
     setConditionGrade(selected?.Condition_Grade || "");
   }, [selected?.Donation_ID]);
 
-  /** auto season-catagory - guesses the season from category name */
   function suggestSeason(category: string) {
     const c = category.toLowerCase();
     if (c.includes("coat") || c.includes("jacket")) return "Winter";
     if (c.includes("tops") || c.includes("t-shirt")) return "Summer";
     if (c.includes("footwear")) return "All-Season";
-    return ""; // no guess
+    return "";
   }
 
-  /** fetch pending donations for staffs */
   async function refreshList() {
     setError("");
     setMessage("");
@@ -81,14 +73,13 @@ export default function StaffDashboard() {
       }
       const data: PendingDonation[] = await res.json();
       setRows(data);
-    } catch (e: any) {
-      setError(e?.message || "Could not load donations.");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Could not load donations.");
     } finally {
       setLoading(false);
     }
   }
 
-  /** call Review API */
   async function sendDecision(payload: ReviewAction) {
     setError("");
     setMessage("");
@@ -102,7 +93,7 @@ export default function StaffDashboard() {
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.error || "Could not save decision.");
       }
-      // reset selection/inputs and removes handled row
+
       setRows((prev) => prev.filter((r) => r.Donation_ID !== payload.donationId));
       setSelected(null);
       setSizeLabel("");
@@ -115,24 +106,22 @@ export default function StaffDashboard() {
           ? "Donation has been accepted and moved to stock."
           : "Donation has been rejected and donor will be notified."
       );
-    } catch (e: any) {
-      setError(e?.message || "Failed to upload decision.");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Failed to upload decision.");
     }
   }
 
-  /** logout */
   async function handleLogout() {
     try {
       const res = await fetch("/api/logout", { method: "POST" });
       if (res.ok) router.push("/login");
       else alert("Failed to logout. Please try again.");
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
       alert("Error logging out. Please try again.");
     }
   }
 
-  /** accept handler (requires the three fields) */
   async function handleAccept(d: PendingDonation) {
     if (!sizeLabel || !genderLabel || !seasonType) {
       alert("Please select Size, Gender and Season before accepting.");
@@ -141,7 +130,8 @@ export default function StaffDashboard() {
     const ok = confirm(`Accept donation #${d.Donation_ID} from ${d.Donor_Name}?`);
     if (!ok) return;
 
-    const reason = prompt("Optional note for record (press Cancel to skip):") || undefined;
+    const reasonInput = prompt("Optional note for record (press Cancel to skip):");
+    const reason = reasonInput === null ? undefined : reasonInput;
 
     await sendDecision({
       donationId: d.Donation_ID,
@@ -154,22 +144,19 @@ export default function StaffDashboard() {
     });
   }
 
-  /** reject handler */
   async function handleReject(d: PendingDonation) {
-    const reason = prompt(`Reason for rejecting donation #${d.Donation_ID}? (optional)`) || undefined;
+    const reasonInput = prompt(`Reason for rejecting donation #${d.Donation_ID}? (optional)`);
+    const reason = reasonInput === null ? undefined : reasonInput;
     await sendDecision({ donationId: d.Donation_ID, action: "reject", reason });
   }
 
-  const acceptDisabled =
-    !selected || !sizeLabel || !genderLabel || !seasonType;
+  const acceptDisabled = !selected || !sizeLabel || !genderLabel || !seasonType;
 
   return (
     <div className="staff-wrap">
-      {/* header */}
       <header className="staff-header">
         <div className="left">
           <h1>Staff Dashboard</h1>
-          <a className="back-link" href="/">← Back to homepage</a>
         </div>
         <div className="right">
           <button className="ghost-btn" onClick={refreshList} disabled={loading}>
@@ -179,7 +166,6 @@ export default function StaffDashboard() {
         </div>
       </header>
 
-      {/* banners */}
       {message && (
         <div className="alert alert-success">
           {message}
@@ -244,7 +230,6 @@ export default function StaffDashboard() {
         {/* details + accept form */}
         <aside className="card details">
           <h2>Details</h2>
-
           {!selected ? (
             <p className="muted">Select a row to see more info.</p>
           ) : (
@@ -253,18 +238,12 @@ export default function StaffDashboard() {
               <p><strong>Donor:</strong> {selected.Donor_Name}</p>
               <p><strong>Category:</strong> {selected.Category}</p>
               <p><strong>Condition:</strong> {selected.Condition_Grade}</p>
-              <p className="full">
-                <strong>Description:</strong><br />
-                {selected.Description}
-              </p>
+              <p className="full"><strong>Description:</strong><br />{selected.Description}</p>
               {selected.PhotoUrl && (
                 <div className="full">
                   <strong>Photo Preview:</strong>
                   <div className="photo-wrapper">
-                    <img src={selected.PhotoUrl}
-                    alt={`Donation ${selected.Donation_ID}`}
-                    className="donation-photo"
-                    />
+                    <img src={selected.PhotoUrl} alt={`Donation ${selected.Donation_ID}`} className="donation-photo" />
                   </div>
                 </div>
               )}
@@ -275,21 +254,12 @@ export default function StaffDashboard() {
 
               <label>
                 Size label
-                <input
-                  className="textin"
-                  placeholder="e.g., S / M / L / 10 / etc."
-                  value={sizeLabel}
-                  onChange={(e) => setSizeLabel(e.target.value)}
-                />
+                <input className="textin" placeholder="e.g., S / M / L / 10 / etc." value={sizeLabel} onChange={(e) => setSizeLabel(e.target.value)} />
               </label>
 
               <label>
                 Gender label
-                <select
-                  className="selectin"
-                  value={genderLabel}
-                  onChange={(e) => setGenderLabel(e.target.value)}
-                >
+                <select className="selectin" value={genderLabel} onChange={(e) => setGenderLabel(e.target.value)}>
                   <option value="">(none)</option>
                   <option value="Men">Men</option>
                   <option value="Women">Women</option>
@@ -300,10 +270,7 @@ export default function StaffDashboard() {
 
               <label className="full">
                 Condition Grade
-                <select className="selectin"
-                value={conditionGrade}
-                onChange={(e) => setConditionGrade(e.target.value)}
-                >
+                <select className="selectin" value={conditionGrade} onChange={(e) => setConditionGrade(e.target.value)}>
                   <option value="">(not set)</option>
                   <option value="A">(A - Like New)</option>
                   <option value="B">(B - Good / Slightly Worn)</option>
@@ -313,11 +280,7 @@ export default function StaffDashboard() {
 
               <label>
                 Season
-                <select
-                  className="selectin"
-                  value={seasonType}
-                  onChange={(e) => setSeasonType(e.target.value)}
-                >
+                <select className="selectin" value={seasonType} onChange={(e) => setSeasonType(e.target.value)}>
                   <option value="">(none)</option>
                   <option value="Winter">Winter</option>
                   <option value="Spring">Spring</option>
@@ -336,8 +299,7 @@ export default function StaffDashboard() {
               </div>
 
               <small className="muted">
-                Accept marks the donation as <b>Accepted</b>, writes a <b>Review</b>, and creates/keeps an
-                <b> Inventory</b> record using the Size/Gender/Season above. Reject writes a Review only.
+                Accept marks the donation as <b>Accepted</b>, writes a <b>Review</b>, and creates/keeps an <b>Inventory</b> record using the Size/Gender/Season above. Reject writes a Review only.
               </small>
             </div>
           )}

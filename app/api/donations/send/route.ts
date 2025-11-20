@@ -4,19 +4,20 @@ import { openDb } from "@/db/db";
 export async function POST(req: NextRequest) {
   try {
     const userId = Number(req.cookies.get("session_user_id")?.value || 0);
-    if (!userId) {
+    if (!userId)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     const body = await req.json();
     const donationId: number = Number(body?.donationId);
-    if (!donationId) {
-      return NextResponse.json({ error: "donationId required" }, { status: 400 });
-    }
+    if (!donationId)
+      return NextResponse.json(
+        { error: "donationId required" },
+        { status: 400 }
+      );
 
     const db = await openDb();
 
-    // Update Inventory (if exists)
+    // Update Inventory from Arriving -> InStock
     await db.run(
       `UPDATE Inventory
        SET Status = 'InStock',
@@ -25,34 +26,17 @@ export async function POST(req: NextRequest) {
       [donationId]
     );
 
-    // Update Sent_Status in Donations
-    const result = await db.run(
+    // Update Donation sent status
+    await db.run(
       `UPDATE Donations
        SET Sent_Status = 'Sent'
        WHERE Donation_ID = ?`,
       [donationId]
     );
 
-    if (result.changes === 0) {
-      return NextResponse.json({ error: "Donation not found" }, { status: 404 });
-    }
-
-    // Notify all staff
-    const staffUsers: { User_ID: number }[] = await db.all(
-      `SELECT User_ID FROM Users WHERE Role = 'Staff'`
-    );
-
-    for (const staff of staffUsers) {
-      await db.run(
-        `INSERT INTO Notifications (User_ID, Donation_ID, Status, Generated_At)
-         VALUES (?, ?, 'Donation Sent', datetime('now'))`,
-        [staff.User_ID, donationId]
-      );
-    }
-
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("send API error:", err);
+    console.error(err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

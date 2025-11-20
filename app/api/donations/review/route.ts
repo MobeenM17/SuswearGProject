@@ -20,7 +20,7 @@ export async function PUT(req: NextRequest) {
     const action: "accept" | "reject" = body?.action;
     const notes: string | undefined = body?.reason ?? undefined;
 
-    // Optional inventory fields (only used on accept)
+    
     const sizeLabel: string | undefined = body?.sizeLabel ?? undefined;
     const genderLabel: string | undefined = body?.genderLabel ?? undefined;
     const seasonType: string | undefined = body?.seasonType ?? undefined;
@@ -34,21 +34,33 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    const db = await openDb();
+  const db = await openDb();
 
-    //Update donation status 
-    const newStatus = action === "accept" ? "Accepted" : "Rejected";
-    await db.run(
-      `UPDATE Donations SET Status = ?, Submitted_At = Submitted_At WHERE Donation_ID = ?`,
-      [newStatus, donationId]
-    );
+// Update donation status
+     const newStatus = action === "accept" ? "Accepted" : "Rejected";
 
-    await db.run(
+     await db.run(
+       `UPDATE Donations SET Status = ?, Submitted_At = Submitted_At WHERE Donation_ID = ?`,
+       [newStatus, donationId]
+     );
 
-      `UPDATE Donations SET Condition_Grade = COALESCE (?, Condition_Grade) WHERE Donation_ID = ?`, 
-      [conditionGrade ?? null, donationId]
 
-    )
+     await db.run(
+       `UPDATE Donations SET Condition_Grade = COALESCE(?, Condition_Grade) WHERE Donation_ID = ?`,
+       [conditionGrade ?? null, donationId]
+     );
+
+
+     if (newStatus === "Accepted") {
+       const trackingNumber =
+         "TRK-" + Math.floor(1000000000 + Math.random() * 9000000000);
+
+       await db.run(
+         `UPDATE Donations SET Tracking = ? WHERE Donation_ID = ?`,
+         [trackingNumber, donationId]
+       );
+     }
+
 
     // Insert a review 
     await db.run(
@@ -62,7 +74,7 @@ export async function PUT(req: NextRequest) {
       await db.run(
         `INSERT OR IGNORE INTO Inventory
            (Donation_ID, Size_Label, Gender_Label, Season_Type, Status, Updated_At)
-         VALUES (?, ?, ?, ?, 'InStock', datetime('now'))`,
+         VALUES (?, ?, ?, ?, 'Arriving', datetime('now'))`,
         [
           donationId,
           sizeLabel ?? null,
@@ -77,7 +89,7 @@ export async function PUT(req: NextRequest) {
            SET Size_Label = COALESCE(?, Size_Label),
                Gender_Label = COALESCE(?, Gender_Label),
                Season_Type = COALESCE(?, Season_Type),
-               Status = 'InStock',
+               Status = 'Arriving',
                Updated_At = datetime('now')
          WHERE Donation_ID = ?`, /* ? is used so i can store it at the end when adding values*/
         [sizeLabel ?? null, genderLabel ?? null, seasonType ?? null, donationId]
