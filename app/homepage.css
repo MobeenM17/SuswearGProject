@@ -113,3 +113,15 @@ footer {
   border-top: 1px solid #cbd5d1;
   margin-top: 60px;
 }
+
+/* SHOP button */
+.button-shop {
+  background-color: var(--accent);
+  color: white;
+  border: 2px solid var(--accent);
+}
+
+.button-shop:hover {
+  background-color: var(--accent-hover);
+  color: #fff;
+}

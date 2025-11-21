@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import "./sent.css";
 
 type SentDonation = {
   Donation_ID: number;
@@ -19,7 +20,7 @@ export default function SentDonations() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Load sent donations
+
   useEffect(() => {
     (async () => {
       try {
@@ -42,7 +43,7 @@ export default function SentDonations() {
     })();
   }, []);
 
-  // this handles a donation to being sent to the warehouse
+
   const handleSend = async (donationId: number) => {
     const confirmed = confirm(
       "Have you posted this item to our local warehouse?"
@@ -56,10 +57,11 @@ export default function SentDonations() {
         body: JSON.stringify({ donationId }),
         credentials: "include",
       });
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to send");
 
-      // update local donation Inventory_Status to InStock
+
       setDonations((prev) =>
         prev.map((d) =>
           d.Donation_ID === donationId
@@ -73,16 +75,44 @@ export default function SentDonations() {
   };
 
   return (
-    <div className="donor-wrap Main-ContainerBox">
-      <header className="donor-header">
-        <h1>Sent Donations</h1>
-        <button onClick={() => router.push("/donor")} className="outline-btn">
-          ← Back to Dashboard
-        </button>
-      </header>
+  <div className="donor-wrap Main-ContainerBox">
+    <header className="donor-header">
+      <h1>Sent Donations</h1>
+      <button onClick={() => router.push("/donor")} className="outline-btn">
+        ← Back to Dashboard
+      </button>
+    </header>
 
+    {/* BIG BUBBLE WRAPPER — now wraps EVERYTHING */}
+    <div className="BigBubbleBox">
+
+      {/* PAGE DESCRIPTION */}
+      <p className="page-desc">
+        Finalise your donation process by posting your accepted items to our
+        warehouse. Use the warehouse address below when sending your package.
+      </p>
+
+      {/* WAREHOUSE BOX */}
+      <div className="warehouse-box">
+        <h2 className="warehouse-title">Warehouse</h2>
+        <div className="warehouse-card">
+          <h3 className="warehouse-name">Sheffield Central Warehouse</h3>
+          <p>
+            125 Meadowhall Way<br />
+            Sheffield, S9 1EP<br />
+            United Kingdom
+          </p>
+
+          <p className="warehouse-note">
+            This is a demonstration address for development purposes.
+          </p>
+        </div>
+      </div>
+
+      {/* ERROR MESSAGE */}
       {error && <p className="alert alert-error">{error}</p>}
 
+      {/* TABLE OR LOADING */}
       {loading ? (
         <p className="muted">Loading sent donations…</p>
       ) : donations.length === 0 ? (
@@ -100,6 +130,7 @@ export default function SentDonations() {
                 <th>Action</th>
               </tr>
             </thead>
+
             <tbody>
               {donations.map((d) => (
                 <tr key={d.Donation_ID}>
@@ -123,9 +154,13 @@ export default function SentDonations() {
                 </tr>
               ))}
             </tbody>
+
           </table>
         </div>
       )}
-    </div>
-  );
+
+    </div> 
+
+  </div>
+);
 }
