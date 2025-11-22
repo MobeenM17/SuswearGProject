@@ -53,7 +53,7 @@ export default function RegisterPage() {
       }
 
       // show success message after successful registrations
-      setMessage("✅ Registration successful! You can now log in.");
+      setMessage("Registration successful! You can now log in.");
       setFullName("");
       setEmail("");
       setPassword("");

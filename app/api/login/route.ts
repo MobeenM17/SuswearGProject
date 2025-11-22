@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcrypt";
+import bcrypt from "bcrypt"; //allows us to hash password
 import { openDb } from "@/db/db";
 
+//error message if user doesnt input a email or password = null.
 export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json();
@@ -11,7 +12,7 @@ export async function POST(req: NextRequest) {
 
     const db = await openDb();
 
-    // --- Check Users table (Admin/Staff) ---
+    // Check Users table from email (Admin/Staff/Donor) 
     const user = await db.get<{
       User_ID: number;
       Full_Name: string;
@@ -25,12 +26,16 @@ export async function POST(req: NextRequest) {
       [email]
     );
 
+    //checks the old legacy password - which was the orignal data
+    //checks the new hashed password 
+    //compares both password and then stores into password
     if (user) {
       const stored = user.Password_Hash ?? "";
       const valid = stored.startsWith("$2")
         ? await bcrypt.compare(password, stored)
         : password === stored;
 
+        //error if the password is invalid 
       if (!valid) return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
 
       const res = NextResponse.json({
@@ -43,6 +48,7 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      //creates a session role - based of the user logged in role.
       res.cookies.set("session_role", user.User_Role, {
         path: "/",
         httpOnly: true,
@@ -51,6 +57,7 @@ export async function POST(req: NextRequest) {
         secure: process.env.NODE_ENV === "production",
       });
 
+      //creates a session id - based of the user logged in id from table.
       res.cookies.set("session_user_id", String(user.User_ID), {
         path: "/",
         httpOnly: true,
@@ -62,7 +69,7 @@ export async function POST(req: NextRequest) {
       return res;
     }
 
-    // --- Check Donor table ---
+    // checks the donor table 
     const donor = await db.get<{
       Donor_ID: number;
       User_ID: number;
@@ -76,6 +83,7 @@ export async function POST(req: NextRequest) {
       [email]
     );
 
+    //same comparrison data from above
     if (donor) {
       const stored = donor.Password_Hash ?? "";
       const valid = stored.startsWith("$2")
@@ -93,6 +101,8 @@ export async function POST(req: NextRequest) {
           User_Role: "Donor",
         },
       });
+
+      //creates that session role and id if the account is donor that is logged in
 
       res.cookies.set("session_role", "Donor", {
         path: "/",
@@ -112,7 +122,7 @@ export async function POST(req: NextRequest) {
 
       return res;
     }
-
+//just a debug a error if user cannot be found
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   } catch (err) {
     console.error("Login error:", err);

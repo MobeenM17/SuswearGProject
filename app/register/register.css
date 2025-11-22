@@ -1,11 +1,8 @@
-/* ===============================
-   REGISTER PAGE STYLING
-   =============================== */
 
 /* Page base */
 body {
-    background-color: var(--background);          /* CHANGED */
-    color: var(--text);                           /* CHANGED */
+    background-color: var(--background);          
+    color: var(--text);                                    
     font-family: "Arial", sans-serif;
     display: flex;
     justify-content: center;
@@ -16,34 +13,34 @@ body {
   
   /* The main box where all form content sits */
   .register-container {
-    background-color: var(--card-bg);             /* CHANGED */
+    background-color: var(--card-bg);               
     padding: 40px;
     border-radius: 12px;
-    box-shadow: var(--shadow);                    /* CHANGED */
+    box-shadow: var(--shadow);                   
     width: 360px;
     text-align: center;
     position: relative; /* for back-home link */
   }
   
-  /* Optional: style the back-to-home link if you added it here too */
+
   .back-home {
     position: absolute;
     top: 12px;
     left: 16px;
     font-size: 14px;
     text-decoration: none;
-    color: var(--accent);                         /* CHANGED */
+    color: var(--accent);                         
     font-weight: bold;
     transition: color 0.2s ease;
   }
   .back-home:hover {
     text-decoration: underline;
-    color: var(--accent-hover);                   /* CHANGED */
+    color: var(--accent-hover);                   
   }
   
   /* Page title */
   .register-container h1 {
-    color: var(--accent);                         /* CHANGED */
+    color: var(--accent);                         
     font-size: 26px;
     margin-bottom: 25px;
   }
@@ -53,7 +50,7 @@ body {
     width: 100%;
     padding: 12px;
     margin-bottom: 18px;
-    border: 1px solid var(--edge);                /* CHANGED */
+    border: 1px solid var(--edge);                
     border-radius: 8px;
     font-size: 14px;
     outline: none;
@@ -62,14 +59,14 @@ body {
   
   /* Highlight input box when clicked */
   .register-input:focus {
-    border-color: var(--accent);                  /* CHANGED */
+    border-color: var(--accent);                  
   }
   
   /* Main register button */
   .register-button {
     width: 100%;
     padding: 12px;
-    background-color: var(--accent);              /* CHANGED */
+    background-color: var(--accent);              
     border: none;
     border-radius: 8px;
     color: #fff;
@@ -80,14 +77,14 @@ body {
   
   /* When the mouse hovers over the button */
   .register-button:hover {
-    background-color: var(--accent-hover);        /* CHANGED */
+    background-color: var(--accent-hover);        
   }
   
   /* Message that appears after form submission */
   .register-message {
     margin-top: 15px;
     font-size: 14px;
-    color: var(--accent-hover);                   /* CHANGED */
+    color: var(--accent-hover);                   
   }
   
   /* Text section under the form for navigation link */
@@ -99,12 +96,12 @@ body {
   
   /* Register footer link */
   .register-footer a {
-    color: var(--accent);                         /* CHANGED */
+    color: var(--accent);                         
     text-decoration: none;
     font-weight: bold;
   }
   .register-footer a:hover {
     text-decoration: underline;
-    color: var(--accent-hover);                   /* CHANGED */
+    color: var(--accent-hover);                   
   }
   
