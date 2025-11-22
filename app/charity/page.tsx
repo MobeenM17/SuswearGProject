@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import "./charity.css";
 
+// This is the inventory item interface and the values we expect from the API calls
 interface InventoryItem {
   Inventory_ID: number;
   Donation_ID: number;
@@ -14,11 +15,10 @@ interface InventoryItem {
   Photo_URLs: string[];
 }
 
-// Charity Shop Page Component
+// Charity shop page component that fetches and displays inventory items from the charity API
 export default function CharityShop() {
   const [items, setItems] = useState<InventoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const fallbackImage = "/5868a1ce-0005-4324-918f-f28de1bc6a43.png"; // Placeholder image URL
+  const [loading, setLoading] = useState(true);// Placeholder for images that fail to laod
 
   useEffect(() => {
     (async () => {
@@ -35,6 +35,7 @@ export default function CharityShop() {
     })();
   }, []);
 
+  // Handles image loading errors by setting a fallback image
   const handleImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     e.currentTarget.src = fallbackImage;
   };
@@ -43,7 +44,7 @@ export default function CharityShop() {
     <main className="Main-ContainerBox">
       {/* Header Navigation */}
       <header className="Charity-Header">
-        <a href="/" className="button button-outline">← Back Home</a>
+        <a href="/" className="button button-outline"> ← Back Home</a>  {/* Removed Link component */}
         <div className="Header-Right-Buttons">
           <a href="/login" className="button">Login</a>
           <a href="/register" className="button button-outline">Register</a>
@@ -71,7 +72,7 @@ export default function CharityShop() {
                     <img
                       key={idx}
                       src={url}
-                      alt={item.Description || "Item image"}
+                      alt={item.Description || "Item image"} // Alternative text for the image
                       className="shop-img"
                       onError={handleImgError}
                     />
@@ -80,7 +81,7 @@ export default function CharityShop() {
               ) : (
                 <img
                   src={fallbackImage}
-                  alt="Placeholder"
+                  alt="Placeholder" // Alternative text for the placeholder image
                   className="shop-img"
                 />
               )}

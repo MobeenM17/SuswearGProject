@@ -28,6 +28,7 @@ type ReviewAction = {
   conditionGrade?: string;
 };
 
+// Staff dashboard page
 export default function StaffDashboard() {
   const [rows, setRows] = useState<PendingDonation[]>([]);
   const [loading, setLoading] = useState(false);
@@ -61,6 +62,7 @@ export default function StaffDashboard() {
     return "";
   }
 
+  // fetch and refresh the pending donations list
   async function refreshList() {
     setError("");
     setMessage("");

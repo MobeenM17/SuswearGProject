@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import "./create-staff.css";
 
+// Page component for creating a new staff account
 export default function CreateStaffPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -15,7 +16,7 @@ export default function CreateStaffPage() {
     setMessage("");
 
     try {
-      const res = await fetch("/api/users/admin/create-staff", {
+      const res = await fetch("/api/users/admin/create-staff", { //api route to create staff
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fullName, email, password }),
@@ -24,15 +25,15 @@ export default function CreateStaffPage() {
       const data = await res.json();
 
       if (res.ok) {
-        setMessage("✅ Staff account created successfully!");
+        setMessage("✅ Staff account created successfully!"); // success message
         setFullName("");
         setEmail("");
         setPassword("");
       } else {
-        setMessage(`❌ ${data.error || "Error creating staff"}`);
+        setMessage(`❌ ${data.error || "Error creating staff"}`); // error message
       }
     } catch (err) {
-      setMessage("❌ Network error. Please try again.");
+      setMessage("❌ Network error. Please try again."); // network error message
     }
   };
 

@@ -1,11 +1,11 @@
-//app/api/donations/create/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { openDb } from "@/db/db";
-import fs from "fs";
+import fs from "fs"; // for file system operations
 import path from "path";
 
-export const config = { api: { bodyParser: false } };
+export const config = { api: { bodyParser: false } }; // Disable default body parsing to handle multipart/form-data
 
+// POST handler — creates a new donation with photo upload
 export async function POST(req: NextRequest) {
   try {
     const userIdStr = req.cookies.get("session_user_id")?.value;
@@ -25,21 +25,21 @@ export async function POST(req: NextRequest) {
 
     const db = await openDb();
 
-    // --- Get Donor_ID ---
+    // Get Donor_ID 
     const donor = await db.get<{ Donor_ID: number }>(
       "SELECT Donor_ID FROM Donor WHERE User_ID = ?",
       [userId]
     );
     if (!donor) return NextResponse.json({ error: "Donor not found" }, { status: 404 });
 
-    // --- Get Category_ID ---
+    // Get Category_ID 
     const category = await db.get<{ CategoryID: number }>(
       "SELECT CategoryID FROM Categories WHERE Name = ?",
       [categoryName]
     );
     if (!category) return NextResponse.json({ error: "Category not found" }, { status: 404 });
 
-    // --- Save photo locally ---
+    // Save photo locally 
     const uploadDir = path.join(process.cwd(), "public/uploads");
     if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     fs.writeFileSync(filePath, Buffer.from(arrayBuffer));
     const photoUrl = `/uploads/${fileName}`; // this is what frontend can use in <Image />
 
-    // --- Insert into Donations ---
+    // Insert into Donations 
     const result = await db.run(
       `INSERT INTO Donations (Donor_ID, Description, Category_ID, WeightKg, Status, Submitted_At)
        VALUES (?, ?, ?, ?, 'Pending', datetime('now'))`,
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     );
     const donationId = result.lastID;
 
-    // --- Insert into PhotoDonation ---
+    // Insert into PhotoDonation 
     await db.run(
       `INSERT INTO PhotoDonation (Donation_ID, Photo_URL, Uploaded_At)
        VALUES (?, ?, datetime('now'))`,

@@ -1,7 +1,7 @@
-//app/api/donations/list-my/route.ts
 import { NextResponse } from "next/server";
 import { openDb } from "@/db/db";
 
+// Database row type for donation list
 interface Donation {
   Donation_ID: number;
   Description: string;
@@ -12,6 +12,7 @@ interface Donation {
   PhotoUrl?: string | null;
 }
 
+// this handler lists donations made by the authenticated donor
 export async function GET(req: Request) {
   try {
     const cookieHeader = req.headers.get("cookie") || "";
@@ -23,14 +24,14 @@ export async function GET(req: Request) {
 
     const db = await openDb();
 
-    // --- Get Donor_ID ---
+    // Get Donor_ID
     const donor = await db.get<{ Donor_ID: number }>(
       "SELECT Donor_ID FROM Donor WHERE User_ID = ?",
       [userId]
     );
     if (!donor) return NextResponse.json({ error: "Donor not found" }, { status: 404 });
 
-    // --- Get Donations with Photo URL (from donation table)---
+    // Get Donations with Photo URL (from donation table)
     const donations = await db.all<Donation[]>(
       `SELECT d.Donation_ID, 
               d.Description, 

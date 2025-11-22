@@ -20,7 +20,7 @@ export async function GET() {
   try {
     const db = await openDb();
 
-    // 1. Get all inventory items
+    // Get all inventory items
     const items: Omit<InventoryItem, "Photo_URLs">[] = await db.all(`
       SELECT 
         i.Inventory_ID,
@@ -35,7 +35,7 @@ export async function GET() {
       WHERE i.Status IN ('Arriving', 'InStock')
     `);
 
-    // 2. For each inventory item, fetch all photos
+    // For each inventory item, fetch all photos
     const itemsWithPhotos: InventoryItem[] = await Promise.all(
       items.map(async (item) => {
         const photos: PhotoRow[] = await db.all(
@@ -45,7 +45,7 @@ export async function GET() {
 
         return {
           ...item,
-          Photo_URLs: photos.map((p) => p.Photo_URL), // now properly typed
+          Photo_URLs: photos.map((p) => p.Photo_URL), //now properly typed
         };
       })
     );

@@ -4,13 +4,16 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import"../promote/promote.css";
 
+// User type definition
 type User = { User_ID: number; Full_Name: string; Email: string };
 
+// Page component for promoting donors to staff and vice versa
 export default function PromotePage() {
   const [donors, setDonors] = useState<User[]>([]);
   const [staff, setStaff] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch donors and staff from the API
   const fetchData = async () => {
     const donorsRes = await fetch("/api/users/donors");
     const staffRes = await fetch("/api/users/staff");
@@ -25,7 +28,7 @@ export default function PromotePage() {
   })();
 }, []);
 
-
+  // Promote donor to staff
   const promote = async (userId: number) => {
     if (!confirm("Promote donor to staff?")) return;
     const res = await fetch("/api/users/admin/promote-donor", {
@@ -42,6 +45,7 @@ export default function PromotePage() {
     }
   };
 
+  // Depromote staff to donor
   const depromote = async (userId: number) => {
     if (!confirm("Depromote staff to donor?")) return;
     const res = await fetch("/api/users/admin/depromote-staff", {

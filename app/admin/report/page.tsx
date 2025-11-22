@@ -79,7 +79,12 @@ export default function ReportPage() {
         // Otherwise, per-donor report (with detailed table)
         setTotalCO2(data.totalCO2);
         setLandfillSaved(data.landfillSavedKG);
-        const items: ReportItem[] = (data.donations || []).map((d: any) => ({
+        const items: ReportItem[] = (data.donations || []).map((d: {
+          donationId: number;
+          description: string;
+          type: string;
+          co2Saved: number;
+        }) => ({
           donationId: d.donationId,
           description: d.description,
           category: d.type,

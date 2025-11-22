@@ -1,9 +1,9 @@
-// app/api/donations/list/route.ts
 import { NextResponse } from "next/server";
 import { openDb } from "@/db/db";
-import { errorMonitor } from "events";
 
 
+
+// Database row type for donation list
 type StaffListRow = {
   Donation_ID: number;
   Donor_Name: string;

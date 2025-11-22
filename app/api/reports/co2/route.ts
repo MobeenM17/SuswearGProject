@@ -27,10 +27,7 @@ const LANDFILL_KG: Record<string, number> = {
 const DFLT_CO2 = 3.0;
 const DFLT_LF = 2.0;
 
-/**
- * POST handler — generates CO₂ / landfill saved reports
- * (global or per donor)
- */
+/* POST handler — generates CO₂ / landfill saved reports (global or per donor)*/
 export async function POST(req: Request) {
   try {
     const { donorEmail } = await req.json().catch(() => ({ donorEmail: null }));

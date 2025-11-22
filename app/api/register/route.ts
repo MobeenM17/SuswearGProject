@@ -3,8 +3,8 @@ import bcrypt from "bcrypt";
 import { openDb } from "@/db/db";
 
 // email + password rules conditions
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-={}[\]:;"'<>,.?/`~]{8,}$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple email format check
+const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-={}[\]:;"'<>,.?/`~]{8,}$/; // Password must be at least 8 characters, contain letters and numbers
 
 export async function POST(req: Request) {
   try {
