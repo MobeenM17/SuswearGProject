@@ -1,103 +1,22 @@
-
-/* Page base */
-body {
-    background-color: var(--background);          
-    color: var(--text);                                    
-    font-family: "Arial", sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-  }
+/*register css + using login css as majority of css */
   
-  /* The main box where all form content sits */
-  .register-container {
-    background-color: var(--card-bg);               
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: var(--shadow);                   
-    width: 360px;
-    text-align: center;
-    position: relative; /* for back-home link */
-  }
-  
-
-  .back-home {
-    position: absolute;
-    top: 12px;
-    left: 16px;
-    font-size: 14px;
-    text-decoration: none;
-    color: var(--accent);                         
-    font-weight: bold;
-    transition: color 0.2s ease;
-  }
-  .back-home:hover {
-    text-decoration: underline;
-    color: var(--accent-hover);                   
-  }
-  
-  /* Page title */
-  .register-container h1 {
-    color: var(--accent);                         
-    font-size: 26px;
-    margin-bottom: 25px;
-  }
-  
-  /* Styles for all input boxes */
-  .register-input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 18px;
-    border: 1px solid var(--edge);                
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s ease;
-  }
-  
-  /* Highlight input box when clicked */
-  .register-input:focus {
-    border-color: var(--accent);                  
-  }
-  
-  /* Main register button */
-  .register-button {
-    width: 100%;
-    padding: 12px;
-    background-color: var(--accent);              
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  /* When the mouse hovers over the button */
-  .register-button:hover {
-    background-color: var(--accent-hover);        
-  }
-  
-  /* Message that appears after form submission */
+  /* shows the message after user registers */
   .register-message {
     margin-top: 15px;
     font-size: 14px;
     color: var(--accent-hover);                   
   }
   
-  /* Text section under the form for navigation link */
+  /* the text section underneath the registration button*/
   .register-footer {
     margin-top: 20px;
     font-size: 14px;
     color: #555;
   }
   
-  /* Register footer link */
+  /* the registeration footer link at the bottom */
   .register-footer a {
     color: var(--accent);                         
-    text-decoration: none;
     font-weight: bold;
   }
   .register-footer a:hover {
