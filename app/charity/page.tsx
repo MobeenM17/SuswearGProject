@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import "./charity.css";
 
-// This is the inventory item interface and the values we expect from the API calls
+// Inventory item type definition
 interface InventoryItem {
   Inventory_ID: number;
   Donation_ID: number;
@@ -15,10 +15,10 @@ interface InventoryItem {
   Photo_URLs: string[];
 }
 
-// Charity shop page component that fetches and displays inventory items from the charity API
+// Charity Shop Page Component
 export default function CharityShop() {
   const [items, setItems] = useState<InventoryItem[]>([]);
-  const [loading, setLoading] = useState(true);// Placeholder for images that fail to laod
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -35,16 +35,11 @@ export default function CharityShop() {
     })();
   }, []);
 
-  // Handles image loading errors by setting a fallback image
-  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = fallbackImage;
-  };
-
   return (
     <main className="Main-ContainerBox">
       {/* Header Navigation */}
       <header className="Charity-Header">
-        <a href="/" className="button button-outline"> ← Back Home</a>  {/* Removed Link component */}
+        <a href="/" className="button button-outline">← Back Home</a> 
         <div className="Header-Right-Buttons">
           <a href="/login" className="button">Login</a>
           <a href="/register" className="button button-outline">Register</a>
@@ -66,26 +61,19 @@ export default function CharityShop() {
         <div className="shop-grid">
           {items.map((item) => (
             <div className="shop-card" key={item.Inventory_ID}>
-              {item.Photo_URLs && item.Photo_URLs.length > 0 ? (
+              {item.Photo_URLs && item.Photo_URLs.length > 0 && (
                 <div className="shop-img-gallery">
                   {item.Photo_URLs.map((url, idx) => (
                     <img
                       key={idx}
                       src={url}
-                      alt={item.Description || "Item image"} // Alternative text for the image
+                      alt={item.Description || "Item image"}
                       className="shop-img"
-                      onError={handleImgError}
                     />
                   ))}
                 </div>
-              ) : (
-                <img
-                  src={fallbackImage}
-                  alt="Placeholder" // Alternative text for the placeholder image
-                  className="shop-img"
-                />
               )}
-
+              
               <div className="shop-info">
                 <h3>{item.Description || "Unnamed item"}</h3>
                 <p className="muted">
