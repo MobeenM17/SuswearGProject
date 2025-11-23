@@ -1,6 +1,12 @@
 # SuswearGProject
 1.Make sure you are in the right directory, you can create a new folder on your desktop by right-clicking your screen, Click New, then folder. Once done make sure that our code folder files are within that folder, then when you run VSC make sure to click on the top right of the screen File, Then New Window, Now Open the folder you just made and drag our program folder into the new Window
 
+Our Github: https://github.com/LabibMiah/SuswearGProject.git
+
+Our Jira: https://hallam-team-q8r91dys.atlassian.net/jira/software/projects/SS/summary?atlOrigin=eyJpIjoiY2Q5YjdjOTRmMzhkNDg2YThkY2JiNDIwODE5OGJmZGYiLCJwIjoiaiJ9
+
+Our Youtube Presentation: 
+
 You will need to have Node.js https://nodejs.org/en/download (LTS 24.11.0) files installed onto your hard drive and or Virtual Machine aswell the extention SQLite by alexcvzz
 
 
