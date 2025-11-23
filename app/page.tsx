@@ -21,21 +21,13 @@ export default function Home() {
                 </div>
 
                 <div className="Welcome-Right-Box">
-                    <Image
-                        src="/home-clothes-donation.png"
-                        alt="Image of clothes being donated"
-                        width={560}
-                        height={360}
-                        className="Welcome-Image"
-                        priority
-                    />
+                    <Image src="/home-clothes-donation.png" alt="Image of clothes being donated" width={560} height={360} className="Welcome-Image" priority/>
                 </div>
             </section>
 
             {/* How It Works Section */}
             <section className="Home-Info-Section">
                 <h2>How does it work</h2>
-
                 <div className="Home-Info-Boxes">
                     <div className="Home-Info-Card">
                         <h3>1. Add your items</h3>
