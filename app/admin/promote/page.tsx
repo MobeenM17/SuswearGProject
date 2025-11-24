@@ -2,75 +2,104 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import"../promote/promote.css";
+import "../promote/promote.css";
 
-// User type definition
-type User = { User_ID: number; Full_Name: string; Email: string };
+// just the fields we actually need
+type User = {
+  User_ID: number;
+  Full_Name: string;
+  Email: string;
+};
 
-// Page component for promoting donors to staff and vice versa
 export default function PromotePage() {
-  const [donors, setDonors] = useState<User[]>([]);
-  const [staff, setStaff] = useState<User[]>([]);
+  const [donorList, setDonorList] = useState<User[]>([]);
+  const [staffList, setStaffList] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch donors and staff from the API
-  const fetchData = async () => {
-    const donorsRes = await fetch("/api/users/donors");
-    const staffRes = await fetch("/api/users/staff");
-    setDonors(await donorsRes.json());
-    setStaff(await staffRes.json());
-    setLoading(false);
-  };
+  // load donor + staff data
+  const loadUsers = async () => {
+    try {
+      const d = await fetch("/api/users/donors");
+      const s = await fetch("/api/users/staff");
 
- useEffect(() => {
-  (async () => {
-    await fetchData();
-  })();
-}, []);
+      const donorsJson = await d.json();
+      const staffJson = await s.json();
 
-  // Promote donor to staff
-  const promote = async (userId: number) => {
-    if (!confirm("Promote donor to staff?")) return;
-    const res = await fetch("/api/users/admin/promote-donor", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId }),
-    });
-    const data = await res.json();
-    if (data.ok) {
-      alert("Promotion successful!");
-      await fetchData(); // ✅ Refresh donor + staff lists
-    } else {
-      alert(data.error || "Promotion failed");
+      setDonorList(donorsJson);
+      setStaffList(staffJson);
+    } catch (err) {
+      console.error("fetch users failed:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Depromote staff to donor
-  const depromote = async (userId: number) => {
-    if (!confirm("Depromote staff to donor?")) return;
-    const res = await fetch("/api/users/admin/depromote-staff", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId }),
-    });
-    const data = await res.json();
-    if (data.ok) {
-      alert("Depromotion successful!");
-      await fetchData(); // ✅ Refresh donor + staff lists
-    } else {
-      alert(data.error || "Depromotion failed");
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  // move this user to staff
+  const makeStaff = async (uid: number) => {
+    const ok = confirm("Turn this donor into staff?");
+    if (!ok) return;
+
+    try {
+      const r = await fetch("/api/users/admin/promote-donor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: uid }),
+      });
+
+      const out = await r.json();
+
+      if (!out.ok) {
+        alert(out.error || "Couldn't promote user");
+        return;
+      }
+
+      alert("Done");
+      loadUsers();
+    } catch (e) {
+      console.error("promote failed:", e);
+      alert("Something went wrong");
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  // drop staff back to donor
+  const removeStaff = async (uid: number) => {
+    if (!confirm("Remove staff status from this user?")) return;
+
+    try {
+      const r = await fetch("/api/users/admin/depromote-staff", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: uid }),
+      });
+
+      const out = await r.json();
+
+      if (!out.ok) {
+        alert(out.error || "Couldn't update user");
+        return;
+      }
+
+      alert("Updated");
+      loadUsers();
+    } catch (err) {
+      console.error("depromote failed:", err);
+    }
+  };
+
+  if (loading) return <p>Loading…</p>;
 
   return (
     <div className="admin-wrap">
       <div className="dashboard-bubble">
-        {/* Back Button */}
-        <div style={{ marginBottom: "16px" }}>
+        
+        {/* Back Button - Added */}
+        <div style={{ marginBottom: "20px" }}>
           <Link href="/admin" className="outline-btn">
-            ← Back to Dashboard
+            ← Back to Admin
           </Link>
         </div>
 
@@ -82,16 +111,19 @@ export default function PromotePage() {
             <tr>
               <th>Name</th>
               <th>Email</th>
-              <th>Action</th>
+              <th />
             </tr>
           </thead>
           <tbody>
-            {donors.map((d) => (
-              <tr key={d.User_ID}>
-                <td>{d.Full_Name}</td>
-                <td>{d.Email}</td>
+            {donorList.map((u) => (
+              <tr key={u.User_ID}>
+                <td>{u.Full_Name}</td>
+                <td>{u.Email}</td>
                 <td>
-                  <button className="primary-btn" onClick={() => promote(d.User_ID)}>
+                  <button
+                    className="primary-btn"
+                    onClick={() => makeStaff(u.User_ID)}
+                  >
                     Promote
                   </button>
                 </td>
@@ -106,16 +138,19 @@ export default function PromotePage() {
             <tr>
               <th>Name</th>
               <th>Email</th>
-              <th>Action</th>
+              <th />
             </tr>
           </thead>
           <tbody>
-            {staff.map((s) => (
-              <tr key={s.User_ID}>
-                <td>{s.Full_Name}</td>
-                <td>{s.Email}</td>
+            {staffList.map((u) => (
+              <tr key={u.User_ID}>
+                <td>{u.Full_Name}</td>
+                <td>{u.Email}</td>
                 <td>
-                  <button className="primary-btn" onClick={() => depromote(s.User_ID)}>
+                  <button
+                    className="primary-btn"
+                    onClick={() => removeStaff(u.User_ID)}
+                  >
                     Depromote
                   </button>
                 </td>
@@ -123,6 +158,7 @@ export default function PromotePage() {
             ))}
           </tbody>
         </table>
+
       </div>
     </div>
   );

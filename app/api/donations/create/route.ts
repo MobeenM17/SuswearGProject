@@ -1,73 +1,97 @@
 import { NextRequest, NextResponse } from "next/server";
 import { openDb } from "@/db/db";
-import fs from "fs"; // for file system operations
+import fs from "fs";
 import path from "path";
 
-export const config = { api: { bodyParser: false } }; // Disable default body parsing to handle multipart/form-data
+export const config = { api: { bodyParser: false } };
 
-// POST handler — creates a new donation with photo upload
+//this handles creation of a donation
 export async function POST(req: NextRequest) {
   try {
-    const userIdStr = req.cookies.get("session_user_id")?.value;
-    if (!userIdStr) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    const userId = Number(userIdStr);
-    if (isNaN(userId)) return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
+    const rawUid = req.cookies.get("session_user_id")?.value;//this gets that users cookies 
+    if (!rawUid) {
+      return NextResponse.json({ error: "Login first." }, { status: 401 });//if there isnt a cookie, this will display meaning you would have to login first
+    }
 
-    const formData = await req.formData();
-    const description = formData.get("description")?.toString().trim() || "";
-    const categoryName = formData.get("categoryId")?.toString().trim() || "";
-    const weightStr = formData.get("weightKg")?.toString() || "";
-    const weightKg = parseFloat(weightStr);
-    const photoFile = formData.get("photo") as File | null;
+    const uidNum = Number(rawUid);
+    if (!uidNum) {
+      return NextResponse.json({ error: "Bad session." }, { status: 400 });//if the cookies isnt a number this will display
+    }
 
-    if (!description || !categoryName || !weightKg || !photoFile)
-      return NextResponse.json({ error: "All fields are required" }, { status: 400 });
+    //parse the form data to get the donations info
+    const fd = await req.formData();
+    const des = fd.get("description")?.toString().trim() || "";
+    const catInput = fd.get("categoryId")?.toString() || "";
+    const wStr = fd.get("weightKg")?.toString();
+    const file = fd.get("photo") as File | null;
+
+    if (!des || !catInput || !wStr || !file) {
+      return NextResponse.json({ error: "Missing stuff." }, { status: 400 });
+    }
+
+    const w = parseFloat(wStr);
+    if (!w || w < 0) {
+      return NextResponse.json({ error: "Weight seems wrong." }, { status: 422 });
+    }
 
     const db = await openDb();
 
-    // Get Donor_ID 
-    const donor = await db.get<{ Donor_ID: number }>(
+    // Match the donor for this user
+    const donorResult = await db.get<{ Donor_ID: number }>(
       "SELECT Donor_ID FROM Donor WHERE User_ID = ?",
-      [userId]
+      [uidNum]
     );
-    if (!donor) return NextResponse.json({ error: "Donor not found" }, { status: 404 });
+    if (!donorResult) {
+      return NextResponse.json({ error: "No donor attached." }, { status: 404 });
+    }
 
-    // Get Category_ID 
-    const category = await db.get<{ CategoryID: number }>(
+    // Grab category row
+    const catRow = await db.get<{ CategoryID: number }>(
       "SELECT CategoryID FROM Categories WHERE Name = ?",
-      [categoryName]
+      [catInput]
     );
-    if (!category) return NextResponse.json({ error: "Category not found" }, { status: 404 });
+    if (!catRow) {
+      return NextResponse.json({ error: "Bad category." }, { status: 404 });
+    }
 
-    // Save photo locally 
-    const uploadDir = path.join(process.cwd(), "public/uploads");
-    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+    // storing uploads (yeah, could be tidier)
+    const outDir = path.join(process.cwd(), "public/uploads");
+    if (!fs.existsSync(outDir)) {
+      fs.mkdirSync(outDir, { recursive: true });
+    }
 
-    const fileName = `${Date.now()}-${photoFile.name}`;
-    const filePath = path.join(uploadDir, fileName);
-    const arrayBuffer = await photoFile.arrayBuffer();
-    fs.writeFileSync(filePath, Buffer.from(arrayBuffer));
-    const photoUrl = `/uploads/${fileName}`; // this is what frontend can use in <Image />
+    const messyName = `${Date.now()}_${file.name}`;
+    const fullPath = path.join(outDir, messyName);
 
-    // Insert into Donations 
-    const result = await db.run(
-      `INSERT INTO Donations (Donor_ID, Description, Category_ID, WeightKg, Status, Submitted_At)
+    const fileBuff = Buffer.from(await file.arrayBuffer());
+    fs.writeFileSync(fullPath, fileBuff);
+
+    // Insert donation first
+    const saved = await db.run(
+      `INSERT INTO Donations 
+       (Donor_ID, Description, Category_ID, WeightKg, Status, Submitted_At)
        VALUES (?, ?, ?, ?, 'Pending', datetime('now'))`,
-      [donor.Donor_ID, description, category.CategoryID, weightKg]
+      [donorResult.Donor_ID, des, catRow.CategoryID, w]
     );
-    const donationId = result.lastID;
 
-    // Insert into PhotoDonation 
+    const newID = saved.lastID;
+
+    // Now stick the image reference in
     await db.run(
       `INSERT INTO PhotoDonation (Donation_ID, Photo_URL, Uploaded_At)
        VALUES (?, ?, datetime('now'))`,
-      [donationId, photoUrl]
+      [newID, `/uploads/${messyName}`]
     );
 
-    return NextResponse.json({ message: "Donation submitted successfully" });
+    return NextResponse.json({ ok: true, id: newID });
   } catch (err: unknown) {
-    console.error("Donation create error:", err);
-    const errorMsg = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: errorMsg }, { status: 500 });
+    // Different message depending on what happened (non-uniform)
+    let msg = "Something went wrong here.";
+    if (err instanceof Error) {
+      msg = err.message || "Unexpected failure.";
+    }
+
+    console.error("POST /donation error:", err);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

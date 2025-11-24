@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { openDb } from "@/db/db";
 
-interface InventoryItem {
+//this is the api route that the charity page uses to get its items
+type ItemBase = {
   Inventory_ID: number;
   Donation_ID: number;
   Description: string | null;
@@ -9,19 +10,17 @@ interface InventoryItem {
   Size_Label: string | null;
   Gender_Label: string | null;
   Season_Type: string | null;
-  Photo_URLs: string[]; // array of photo URLs
-}
+};
 
-interface PhotoRow {
-  Photo_URL: string;
-}
 
-export async function GET() {
+export async function GET() { //this is the request handler 
+  let dbConn;
+
   try {
-    const db = await openDb();
+    dbConn = await openDb();
 
-    // Get all inventory items
-    const items: Omit<InventoryItem, "Photo_URLs">[] = await db.all(`
+//gets all the items in the db that are either arriving or that could be in stock
+    const rows: ItemBase[] = await dbConn.all(` 
       SELECT 
         i.Inventory_ID,
         i.Donation_ID,
@@ -31,28 +30,46 @@ export async function GET() {
         i.Gender_Label,
         i.Season_Type
       FROM Inventory i
-      JOIN Donations d ON d.Donation_ID = i.Donation_ID
+        JOIN Donations d ON d.Donation_ID = i.Donation_ID
       WHERE i.Status IN ('Arriving', 'InStock')
     `);
 
-    // For each inventory item, fetch all photos
-    const itemsWithPhotos: InventoryItem[] = await Promise.all(
-      items.map(async (item) => {
-        const photos: PhotoRow[] = await db.all(
-          `SELECT Photo_URL FROM PhotoDonation WHERE Donation_ID = ?`,
-          [item.Donation_ID]
-        );
+    //if there isnt an item, it will return an empty array
+    if (!rows?.length) {
+      return NextResponse.json({ items: [] });
+    }
 
-        return {
-          ...item,
-          Photo_URLs: photos.map((p) => p.Photo_URL), //now properly typed
-        };
-      })
+    //gets the the photos for the items
+    const photoLookup = await dbConn.all(
+      `SELECT Donation_ID, Photo_URL FROM PhotoDonation`
     );
 
-    return NextResponse.json({ items: itemsWithPhotos });
+ 
+    //maps the photos to the items that they are
+    const photoMap: Record<number, string[]> = {};
+    for (const p of photoLookup) {
+      if (!photoMap[p.Donation_ID]) photoMap[p.Donation_ID] = [];
+      photoMap[p.Donation_ID].push(p.Photo_URL);
+    }
+
+
+    const out = rows.map((item) => ({
+      ...item,
+      Photo_URLs: photoMap[item.Donation_ID] || []
+    }));
+
+    return NextResponse.json({ items: out });
+
   } catch (err) {
-    console.error("Inventory fetch error:", err);
+
+    //this is just incase something bad happens
+    console.warn("Inventory route failed:", err);
     return NextResponse.json({ items: [] }, { status: 500 });
+
+  } finally {
+
+    try {
+      await dbConn?.close();
+    } catch (_) {}
   }
 }

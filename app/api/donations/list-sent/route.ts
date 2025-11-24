@@ -4,10 +4,10 @@ import { openDb } from "@/db/db";
 export async function GET(req: Request) {
   try {
     // Get user ID from cookies
-    const cookieHeader = req.headers.get("cookie") || "";
+    const cookieHeader = req.headers.get("cookie") || ""; // Get all cookies
     const donorCookie = cookieHeader
       .split(";")
-      .find((c) => c.trim().startsWith("session_user_id="));
+      .find((c) => c.trim().startsWith("session_user_id=")); // Find the specific cookie
 
     if (!donorCookie)
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -35,7 +35,7 @@ export async function GET(req: Request) {
       Submitted_At: string;
       Status: string;
       Inventory_Status: string | null;
-    }>(
+    }>( 
       `SELECT d.Donation_ID,
               d.Description,
               d.WeightKg,
