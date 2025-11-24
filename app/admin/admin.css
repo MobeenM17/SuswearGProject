@@ -1,4 +1,4 @@
-/* ===== Dashboard Bubble ===== */
+/* The Dashboard bubble */
 .dashboard-bubble {
   background: #ffffff;
   border: 1px solid var(--edge);
@@ -17,7 +17,7 @@
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
 }
 
-/* ===== Admin Header ===== */
+/* The ADmin header */
 .admin-header {
   display: flex;
   justify-content: space-between;
@@ -32,7 +32,7 @@
   gap: 12px;
 }
 
-/* Logout Button (Ghost Style Matching Donor Dashboard) */
+/* Logout page that matches the other logout buttons aswell */
 .ghost-btn {
   background: transparent;
   border: 1px solid var(--accent);
@@ -51,7 +51,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Welcome Section */
+/* The welcome section*/
 .welcome-section h2 {
   font-size: 24px;
   color: var(--accent);
@@ -81,7 +81,7 @@
   gap: 6px;
 }
 
-/* Admin Tools Cards Grid */
+/* the admin tools grid*/
 .admin-tools {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -108,7 +108,7 @@
   margin-bottom: 12px;
 }
 
-/* Buttons */
+/* the buttons on the page*/
 .admin-tools .primary-btn {
   width: 100%;
   padding: 10px 14px;
@@ -127,7 +127,7 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* Responsive */
+/* to make it responsive*/
 @media (max-width: 980px) {
   .admin-tools {
     grid-template-columns: 1fr;
