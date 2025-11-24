@@ -58,21 +58,6 @@ body { background: var(--background); color: var(--text); }
 .ghost-btn { color: var(--text); border-color: var(--edge); background: #fff; }
 .ghost-btn:hover { background: #f8fafb; transform: translateY(-1px); }
 
-/* Alerts */
-.alert {
-  margin: 12px 0 18px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--edge);
-  background: #ffffff;
-}
-.alert-success { border-color: #bfe9d5; background: #e7f6ef; }
-.alert-error   { border-color: #f5c6c2; background: #fdecea; }
-.alert-close { background: transparent; border: none; font-size: 18px; cursor: pointer; }
 
 /* Grid layout  */
 .grid {
