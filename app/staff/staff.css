@@ -1,5 +1,7 @@
 /* Staff CSS */
-.staff-wrap { padding-top: 12px; }
+.staff-wrap { 
+  padding-top: 12px; 
+}
 
 /* Header Design */
 .staff-header {
@@ -7,9 +9,9 @@
   top: 0; 
   background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.65));
   z-index: 5;
+  border-radius: 15px;
   justify-content: space-between; 
   display: flex; 
-  border-radius: 15px;
   align-items: center;
   margin-bottom: 16px;
   padding: 14px 16px; border: 1px solid var(--edge); 
