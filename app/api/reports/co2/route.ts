@@ -140,6 +140,7 @@ export async function POST(req: Request) {
 
     // assigns it all together 
     if (isGlobal) {
+      //total donations = all donors donation
       return NextResponse.json({
         scope: "all",
         totalDonations: donations.length,
@@ -147,6 +148,8 @@ export async function POST(req: Request) {
         landfillSavedKG: Number(landfillSavedKG.toFixed(1)),
       });
     } else {
+
+      //total donation from this donor selected
       return NextResponse.json({
         scope: "donor",
         donor: donorRow!.Full_Name,
