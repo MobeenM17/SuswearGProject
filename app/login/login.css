@@ -1,81 +1,77 @@
-/* ===============================
-   LOGIN PAGE STYLING
-   =============================== */
+/*login page (also a bit register css) styling*
 
-/* use global background + text colours */
+
+/* uses the global background + the text colours */
 body {
   background-color: var(--background);
   color: var(--text);
   font-family: "Arial", sans-serif;
   display: flex;
-  justify-content: center; /* centers login box horizontally */
-  align-items: center;     /* centers login box vertically */
-  height: 100vh;           /* fills full page height */
+  justify-content: center; /* center the login-box horizontally */
+  align-items: center;     /* center  the login-box vertically */
+  height: 100vh;           /* make sures to fill the full page height */
   margin: 0;
 }
 
-/* Main container that holds the login form box */
-.login-container {
+/* is the main container box that holds the login form */
+.login-container-box {
   background-color: var(--card-bg);
-  border-radius: 12px;
-  padding: 40px;
-  width: 360px;
   box-shadow: var(--shadow);
+  border-radius: 12px;
+  width: 500px;
+  padding: 40px;
   text-align: center;
-  position: relative; /* for back-home positioning */
+  position: relative; /* this is for the back home postioning*/
 }
 
-/* Back to homepage link */
-.back-home {
+/* the back to homepage text link */
+.back-home-link {
+  font-size: 20px;
   position: absolute;
-  top: 12px;
-  left: 16px;
-  font-size: 14px;
-  text-decoration: none;
+  left: 16px; /* changes the position to the top*/
+  top: 12px; /* changes the position to the top*/
   color: var(--accent);
-  font-weight: bold;
-  transition: color 0.2s ease;
 }
-.back-home:hover {
-  text-decoration: underline;
-  color: var(--accent-hover);
+.back-home-link:hover {
+  color: var(--accent-hover); /* turns it to dark green when hovering over the text*/
 }
 
 /* Heading for login box */
-.login-container h1 {
-  color: var(--accent);
+.login-container-box h1 {
   font-size: 26px;
   margin-bottom: 25px;
+  color: var(--accent);
 }
 
 /* Input fields (email, password) */
 .login-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 18px;
-  border: 1px solid var(--edge);
+  width: 90%; /* changes the width of the boxes*/
+  padding: 10px;
+  margin-bottom: 15px; /* changes the position of the boxes*/
+  border: 3px solid var(--edge); /* add a green border around the box edge when selected*/
   border-radius: 8px;
   font-size: 14px;
+  text-align: center;
   outline: none;
-  transition: border-color 0.2s ease;
 }
 .login-input:focus {
-  border-color: var(--accent);
+  border-color: var(--accent); /* greenc colour the for the border*/
+  
 }
 
 /* Main login button */
-.login-button {
+.login-btn {
+  padding: 14px;
   width: 100%;
-  padding: 12px;
-  background-color: var(--accent);
   border: none;
   border-radius: 8px;
+  background-color: var(--accent);
   color: #fff;
-  font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-size: 16px;
+  
 }
-.login-button:hover {
+.login-btn:hover {
   background-color: var(--accent-hover);
 }
 

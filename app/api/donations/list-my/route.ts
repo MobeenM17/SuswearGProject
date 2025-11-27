@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { openDb } from "@/db/db";
 
-// Database row type for donation list
+// Basic shape for donation rows
 interface Donation {
   Donation_ID: number;
   Description: string;
@@ -12,45 +12,65 @@ interface Donation {
   PhotoUrl?: string | null;
 }
 
-// this handler lists donations made by the authenticated donor
 export async function GET(req: Request) {
   try {
-    const cookieHeader = req.headers.get("cookie") || "";
-    const donorCookie = cookieHeader.split(";").find((c) => c.trim().startsWith("session_user_id="));
-    if (!donorCookie) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    const cookies = req.headers.get("cookie") ?? "";
 
-    const userId = parseInt(donorCookie.split("=")[1]);
-    if (isNaN(userId)) return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
+    // Quick + sloppy cookie grab (dev-style)
+    const raw = cookies.match(/session_user_id=([^;]+)/);
+    if (!raw)
+      return NextResponse.json(
+        { error: "No session info" },
+        { status: 401 }
+      );
+
+    const userId = Number(raw[1]);
+    if (!userId)
+      return NextResponse.json(
+        { error: "Bad session value" },
+        { status: 400 }
+      );
 
     const db = await openDb();
 
-    // Get Donor_ID
+    // find donor for this user
     const donor = await db.get<{ Donor_ID: number }>(
-      "SELECT Donor_ID FROM Donor WHERE User_ID = ?",
+      "select Donor_ID from Donor where User_ID = ?",
       [userId]
     );
-    if (!donor) return NextResponse.json({ error: "Donor not found" }, { status: 404 });
 
-    // Get Donations with Photo URL (from donation table)
-    const donations = await db.all<Donation[]>(
-      `SELECT d.Donation_ID, 
-              d.Description, 
-              c.Name AS Category, 
-              d.WeightKg, 
-              d.Status,
-              d.Submitted_At, 
-              pd.Photo_URL AS PhotoUrl
-       FROM Donations d
-       JOIN Categories c ON c.CategoryID = d.Category_ID
-       LEFT JOIN PhotoDonation pd ON pd.Donation_ID = d.Donation_ID
-       WHERE d.Donor_ID = ?
-       ORDER BY d.Submitted_At DESC`,
+    if (!donor)
+      return NextResponse.json(
+        { error: "Donor record missing" },
+        { status: 404 }
+      );
+
+    // fetch donations (with optional photo)
+    const donations = await db.all<Donation>(
+      `
+      select 
+        d.Donation_ID,
+        d.Description,
+        c.Name as Category,
+        d.WeightKg,
+        d.Status,
+        d.Submitted_At,
+        pd.Photo_URL as PhotoUrl
+      from Donations d
+      join Categories c on c.CategoryID = d.Category_ID
+      left join PhotoDonation pd on pd.Donation_ID = d.Donation_ID
+      where d.Donor_ID = ?
+      order by d.Submitted_At desc
+      `,
       [donor.Donor_ID]
     );
 
     return NextResponse.json(donations);
   } catch (err) {
-    console.error("list-my error:", err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    console.error("donor-list err:", err);
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 }
+    );
   }
 }

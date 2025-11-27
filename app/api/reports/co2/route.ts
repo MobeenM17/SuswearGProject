@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { openDb } from "@/db/db";
 
-/** Database row types */
+// gets the database roles
 type DonorRow = { Donor_ID: number; Full_Name: string; Email: string };
 type DonationRow = { Donation_ID: number; Description: string; CategoryName: string };
 
-/** Factors: kg saved per accepted/distributed donation */
+// kg saved per accepted/distributed donation
 const CO2_KG: Record<string, number> = {
   Clothing: 3.0,
   Men: 3.5,
@@ -27,7 +27,7 @@ const LANDFILL_KG: Record<string, number> = {
 const DFLT_CO2 = 3.0;
 const DFLT_LF = 2.0;
 
-/* POST handler — generates CO₂ / landfill saved reports (global or per donor)*/
+// generates the co2 and landfill reports that are saved in the database (global and per donor)
 export async function POST(req: Request) {
   try {
     const { donorEmail } = await req.json().catch(() => ({ donorEmail: null }));
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
     const db = await openDb();
 
-    // (A) Get donor row if filtering by donor
+    // gets the donor row if they select the donor
     let donorRow: DonorRow | undefined;
     if (!isGlobal) {
       donorRow = (await db.get(
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // (B) Get accepted/distributed donations (global or by donor)
+    // gets the accepted/distributed donations (global or by donor)
     const donations = (await db.all(
       `
       SELECT d.Donation_ID,
@@ -68,9 +68,9 @@ export async function POST(req: Request) {
       isGlobal ? [] : [donorRow!.Donor_ID]
     )) as DonationRow[];
 
-    // (C) Calculate CO₂ and landfill savings
-    let totalCO2 = 0;
-    let landfillSavedKG = 0;
+    // Co2 and landfill caculation
+    let totalCO2 = 0; //place holder
+    let landfillSavedKG = 0; //place holder
     const perDonation: Array<{
       donationId: number;
       description: string;
@@ -95,7 +95,8 @@ export async function POST(req: Request) {
       }
     }
 
-    // (D) Upsert daily metrics — safe with fallback for older SQLite
+    //
+    //inserts and updates metrtics 
     if (isGlobal) {
       const today = new Date().toISOString().slice(0, 10);
 
@@ -117,7 +118,7 @@ export async function POST(req: Request) {
           ]
         );
       } catch (e) {
-        // Fallback for older SQLite builds; keeps request successful
+        // If theres an error it keeps request successful
         try {
           await db.run(
             `
@@ -132,13 +133,14 @@ export async function POST(req: Request) {
             ]
           );
         } catch (inner) {
-          console.warn("⚠️ Metrics write skipped:", inner);
+          console.warn("Could not get metrics!:", inner);
         }
       }
     }
 
-    // (E) Final response
+    // assigns it all together 
     if (isGlobal) {
+      //total donations = all donors donation
       return NextResponse.json({
         scope: "all",
         totalDonations: donations.length,
@@ -146,6 +148,8 @@ export async function POST(req: Request) {
         landfillSavedKG: Number(landfillSavedKG.toFixed(1)),
       });
     } else {
+
+      //total donation from this donor selected
       return NextResponse.json({
         scope: "donor",
         donor: donorRow!.Full_Name,
@@ -157,7 +161,7 @@ export async function POST(req: Request) {
       });
     }
   } catch (err) {
-    console.error("❌ CO₂ report error:", err);
+    console.error("Co2 report error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

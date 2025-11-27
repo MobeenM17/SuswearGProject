@@ -1,18 +1,17 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import "./staff.css";
 import { useRouter } from "next/navigation";
+import "./staff.css";
 
-/** Row shown in the pending table */
+/** the donations row for the data */
 type PendingDonation = {
-  Donation_ID: number;
-  Donor_Name: string;
-  Description: string;
-  Condition_Grade: string | null;
-  Category: string;
-  Submitted_At: string;
-  PhotoUrl?: string | null; 
+  Donation_ID: number; //stores donation id
+  Donor_Name: string; //stores donors name
+  Description: string; //stores the description of donation
+  Condition_Grade: string | null; //stores the condition grade
+  Category: string; //stores the catagory
+  Submitted_At: string; //stores the submitted at time
+  PhotoUrl?: string | null; //stores the photo url
 };
 
 /** sent to /api/donations/review */
@@ -20,7 +19,6 @@ type ReviewAction = {
   donationId: number;
   action: "accept" | "reject";
   reason?: string;
-
   // used only when accepting (to create/keep Inventory)
   sizeLabel?: string;
   genderLabel?: string;
@@ -30,21 +28,21 @@ type ReviewAction = {
 
 // Staff dashboard page
 export default function StaffDashboard() {
-  const [rows, setRows] = useState<PendingDonation[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+  const [rows, setRows] = useState<PendingDonation[]>([]); //creates the rows for each data
+  const [loading, setLoading] = useState(false); //loading (true or false)
+  const [message, setMessage] = useState(""); //displays the message
+  const [error, setError] = useState("");//passes through the error message 
+  
+  //input fields
   const [selected, setSelected] = useState<PendingDonation | null>(null);
+  const [sizeLabel, setSizeLabel] = useState(""); //lable sizes example xl,l,m,xs,s
+  const [genderLabel, setGenderLabel] = useState(""); //gender lable -male or female
+  const [seasonType, setSeasonType] = useState(""); //type of season for the clothing
+  const [conditionGrade, setConditionGrade] = useState(""); //the grade conidition of the clothing
 
-  const [sizeLabel, setSizeLabel] = useState("");
-  const [genderLabel, setGenderLabel] = useState("");
-  const [seasonType, setSeasonType] = useState("");
-  const [conditionGrade, setConditionGrade] = useState("");
-
-  const router = useRouter();
-
+  const router = useRouter(); 
   useEffect(() => {
-    refreshList();
+    refreshList(); //refreshes the functions
   }, []);
 
   useEffect(() => {
@@ -68,47 +66,50 @@ export default function StaffDashboard() {
     setMessage("");
     setLoading(true);
     try {
-      const res = await fetch("/api/donations/list", { cache: "no-store" });
+      const res = await fetch("/api/donations/list", 
+        { cache: "no-store" });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body?.error || "Failed to load donations.");
+        throw new Error(body?.error || "Failed to load the donations.");
       }
       const data: PendingDonation[] = await res.json();
       setRows(data);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Could not load donations.");
-    } finally {
+    } 
+    catch (e: unknown) 
+    {
+      setError(e instanceof Error ? e.message : "Could not load the donations.");
+    } 
+    finally //runs after the end of the try-catch
+    {
       setLoading(false);
     }
   }
 
   async function sendDecision(payload: ReviewAction) {
-    setError("");
-    setMessage("");
+    setError(""); //placeholder + clears the string inside of the function
+    setMessage(""); //clears the string inside of the function
     try {
-      const res = await fetch("/api/donations/review", {
+      const res = await fetch("/api/donations/review", { // gets the data from review
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" }, 
         body: JSON.stringify(payload),
       });
-      if (!res.ok) {
+      if (!res.ok) //error message 
+        {
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.error || "Could not save decision.");
       }
-
       setRows((prev) => prev.filter((r) => r.Donation_ID !== payload.donationId));
-      setSelected(null);
+      setSelected(null); 
       setSizeLabel("");
       setGenderLabel("");
       setSeasonType("");
       setConditionGrade("");
-
       setMessage(
-        payload.action === "accept"
-          ? "Donation has been accepted and moved to stock."
-          : "Donation has been rejected and donor will be notified."
-      );
-    } catch (e: unknown) {
+        payload.action === "accept" ? "Donation has been accepted and moved to stock." : "Donation has been rejected and donor will be notified.");
+    } 
+    catch (e: unknown) 
+    {
       setError(e instanceof Error ? e.message : "Failed to upload decision.");
     }
   }
@@ -124,20 +125,26 @@ export default function StaffDashboard() {
     }
   }
 
-  async function handleAccept(d: PendingDonation) {
-    if (!sizeLabel || !genderLabel || !seasonType) {
-      alert("Please select Size, Gender and Season before accepting.");
-      return;
+  async function handleAccept(d: PendingDonation) 
+  {
+    if (!sizeLabel || !genderLabel || !seasonType) 
+      {
+      alert("Please select Size, Gender and Season before accepting."); //asks the user to select all these inputs
+      return; //returns back so it allows the user to reselect again
     }
     const ok = confirm(`Accept donation #${d.Donation_ID} from ${d.Donor_Name}?`);
-    if (!ok) return;
+    if (!ok) 
+    {
+      return;
+    }
 
-    const reasonInput = prompt("Optional note for record (press Cancel to skip):");
-    const reason = reasonInput === null ? undefined : reasonInput;
+    const reasonInput = prompt("Optional note for record (press Cancel to skip):"); //sends a prompt popup message to ask user if they want to type a note
+    const reason = reasonInput === null ? undefined : reasonInput; //allows it so user doesnt doesnt actually need to send anything and can skip
 
+    //gets all the input value
     await sendDecision({
       donationId: d.Donation_ID,
-      action: "accept",
+      action: "accept", //when user hit accepts
       reason,
       sizeLabel,
       genderLabel,
@@ -147,65 +154,56 @@ export default function StaffDashboard() {
   }
 
   async function handleReject(d: PendingDonation) {
-    const reasonInput = prompt(`Reason for rejecting donation #${d.Donation_ID}? (optional)`);
+    const reasonInput = prompt(`Reason for rejecting donation #${d.Donation_ID}? (optional!)`);
     const reason = reasonInput === null ? undefined : reasonInput;
     await sendDecision({ donationId: d.Donation_ID, action: "reject", reason });
   }
-
   const acceptDisabled = !selected || !sizeLabel || !genderLabel || !seasonType;
 
   return (
     <div className="staff-wrap">
       <header className="staff-header">
-        <div className="left">
-          <h1>Staff Dashboard</h1>
-        </div>
+      <span className="back-link" onClick={() => router.push("/")}>
+            ← Back to homepage
+          </span>
+        <div className="left"> <h1><strong>Staff Dashboard!</strong></h1></div>
         <div className="right">
-          <button className="ghost-btn" onClick={refreshList} disabled={loading}>
-            {loading ? "Refreshing…" : "Refresh"}
-          </button>
-          <button className="outline-btn logout-btn" onClick={handleLogout}>Logout</button>
+          <button className="ghost-btn" onClick={refreshList} disabled={loading}> {loading ? "Refreshing…" : "Refresh"} </button>
+          <button className="outline-btn logout-btn" onClick={handleLogout}>Logout!</button>
         </div>
       </header>
 
       {message && (
-        <div className="alert alert-success">
-          {message}
-          <button className="alert-close" onClick={() => setMessage("")} aria-label="Close">×</button>
-        </div>
+        <div className="alert alert-success"> {message}
+          <button className="alert-close" onClick={() => setMessage("")} aria-label="Close">×</button> </div>
       )}
       {error && (
-        <div className="alert alert-error">
-          {error}
+        <div className="alert alert-error"> {error}
           <button className="alert-close" onClick={() => setError("")} aria-label="Close">×</button>
         </div>
-      )}
-
-      <div className="grid">
+      )
+      }
         {/* pending table */}
+      <div className="grid">
         <section className="card">
-          <div className="table-head">
-            <h2>Pending Donations</h2>
+          <div className="table-head"> <h2>Pending Donations</h2>
             <span className="muted">{rows.length} waiting</span>
           </div>
-
           <div className="table-wrap" role="region" aria-label="Pending donations">
-            <table className="table">
-              <thead>
+            <table className="table"><thead>
                 <tr>
-                  <th>ID</th>
+                  <th>ID</th> 
                   <th>Donor</th>
                   <th>Category</th>
                   <th>Condition</th>
                   <th>Description</th>
                   <th>Submitted</th>
                   <th>Actions</th>
-                </tr>
-              </thead>
+                </tr> </thead>
               <tbody>
                 {rows.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="muted">Nothing pending right now.</td>
+                    <td colSpan={7} className="muted">Nothing is pending right now!</td>
                   </tr>
                 ) : (
                   rows.map((d) => (
@@ -214,12 +212,13 @@ export default function StaffDashboard() {
                       <td>{d.Donor_Name}</td>
                       <td>{d.Category}</td>
                       <td>{d.Condition_Grade}</td>
+
                       <td className="desc-cell">{d.Description}</td>
                       <td>{d.Submitted_At ? new Date(d.Submitted_At).toLocaleDateString() : "—"}</td>
                       <td className="actions">
-                        <button className="outline-btn" onClick={() => setSelected(d)}>View</button>
-                        <button className="primary-btn" onClick={() => setSelected(d)}>Review</button>
-                        <button className="ghost-btn danger" onClick={() => handleReject(d)}>Reject</button>
+                        <button className="outline-btn" onClick={() => setSelected(d)}>View!</button>
+                        <button className="primary-btn" onClick={() => setSelected(d)}>Review!</button>
+                        <button className="ghost-btn danger" onClick={() => handleReject(d)}>Reject!</button>
                       </td>
                     </tr>
                   ))
@@ -228,7 +227,6 @@ export default function StaffDashboard() {
             </table>
           </div>
         </section>
-
         {/* details + accept form */}
         <aside className="card details">
           <h2>Details</h2>
@@ -236,16 +234,15 @@ export default function StaffDashboard() {
             <p className="muted">Select a row to see more info.</p>
           ) : (
             <div className="detail-grid">
-              <p><strong>ID:</strong> {selected.Donation_ID}</p>
+              {/* the selected data*/}
+              <p><strong>ID:</strong> {selected.Donation_ID}</p> 
               <p><strong>Donor:</strong> {selected.Donor_Name}</p>
               <p><strong>Category:</strong> {selected.Category}</p>
-              <p><strong>Condition:</strong> {selected.Condition_Grade}</p>
               <p className="full"><strong>Description:</strong><br />{selected.Description}</p>
+              
               {selected.PhotoUrl && (
-                <div className="full">
-                  <strong>Photo Preview:</strong>
-                  <div className="photo-wrapper">
-                    <img src={selected.PhotoUrl} alt={`Donation ${selected.Donation_ID}`} className="donation-photo" />
+                <div className="full"> <strong>Preview Photo:</strong>
+                  <div className="photo-wrapper"> <img src={selected.PhotoUrl} alt={`Donation ${selected.Donation_ID}`} className="donation-photo" />
                   </div>
                 </div>
               )}
@@ -253,12 +250,7 @@ export default function StaffDashboard() {
               <div className="full">
                 <label className="muted">Inventory details (used only when you Accept)</label>
               </div>
-
-              <label>
-                Size label
-                <input className="textin" placeholder="e.g., S / M / L / 10 / etc." value={sizeLabel} onChange={(e) => setSizeLabel(e.target.value)} />
-              </label>
-
+              <label> Size label! <input className="textin" placeholder="Example: S / M / L / 10 /" value={sizeLabel} onChange={(e) => setSizeLabel(e.target.value)} /></label>
               <label>
                 Gender label
                 <select className="selectin" value={genderLabel} onChange={(e) => setGenderLabel(e.target.value)}>
@@ -271,7 +263,8 @@ export default function StaffDashboard() {
               </label>
 
               <label className="full">
-                Condition Grade
+                Condition Grade!
+              {/* Drop down options */}
                 <select className="selectin" value={conditionGrade} onChange={(e) => setConditionGrade(e.target.value)}>
                   <option value="">(not set)</option>
                   <option value="A">(A - Like New)</option>
@@ -279,16 +272,16 @@ export default function StaffDashboard() {
                   <option value="C">(C - Worn)</option>
                 </select>
               </label>
-
               <label>
                 Season
+                {/* Drop down options */}
                 <select className="selectin" value={seasonType} onChange={(e) => setSeasonType(e.target.value)}>
                   <option value="">(none)</option>
                   <option value="Winter">Winter</option>
                   <option value="Spring">Spring</option>
                   <option value="Summer">Summer</option>
                   <option value="Autumn">Autumn</option>
-                  <option value="All-Season">All-Season</option>
+                  <option value="All-Season">All-Season</option> 
                 </select>
               </label>
 
@@ -299,10 +292,6 @@ export default function StaffDashboard() {
                 <button className="ghost-btn danger" onClick={() => handleReject(selected!)}>Reject</button>
                 <button className="ghost-btn" onClick={() => setSelected(null)}>Close</button>
               </div>
-
-              <small className="muted">
-                Accept marks the donation as <b>Accepted</b>, writes a <b>Review</b>, and creates/keeps an <b>Inventory</b> record using the Size/Gender/Season above. Reject writes a Review only.
-              </small>
             </div>
           )}
         </aside>

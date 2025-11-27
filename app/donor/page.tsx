@@ -4,8 +4,12 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import "./donor.css";
 
+
+//different status 
 type DonationStatus = "Pending" | "Accepted" | "Rejected" | "Distributed";
 
+
+//gets donations rows
 interface Donation {
   Donation_ID: number;
   Description: string;
@@ -23,6 +27,8 @@ interface NotificationRow {
   Generated_At: string;
 }
 
+
+//the catagories
 const CATEGORIES = [
   "Clothing",
   "Men",

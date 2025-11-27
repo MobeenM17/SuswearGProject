@@ -1,11 +1,13 @@
 /* donor css */
 
+/* txt and background colours for page */
 body { background: var(--background); color: var(--text); }
 
-/* page container inherits .Main-ContainerBox from globals */
+/* wrapper */
 .donor-wrap { padding-top: 12px; }
 
-/* Header */
+/* header donor */
+/* makes it so it stays at the top and has a blur */
 .donor-header {
   position: sticky;
   top: 0;
@@ -14,6 +16,7 @@ body { background: var(--background); color: var(--text); }
   background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.65));
   border: 1px solid var(--edge);
   box-shadow: var(--shadow);
+  
   border-radius: 12px;
   padding: 14px 16px;
   display: flex;
@@ -21,8 +24,10 @@ body { background: var(--background); color: var(--text); }
   justify-content: space-between;
   margin-bottom: 16px;
 }
-
+/* holding the back text and page title */
 .header-left { display: grid; gap: 4px; }
+
+/* styling the main header title */
 .header-left h1 {
   color: var(--accent);
   font-size: 26px;
@@ -30,7 +35,7 @@ body { background: var(--background); color: var(--text); }
   margin: 0;
 }
 
-/* compact breadcrumb-style back link */
+/* BACK TO HOME PAGE, Press and u can go back */
 .back-link {
   font-size: 13px;
   color: var(--accent);
@@ -40,9 +45,10 @@ body { background: var(--background); color: var(--text); }
 }
 .back-link:hover { color: var(--accent-hover); text-decoration: underline; }
 
+/* dashboard and logout buttons  */
 .header-actions { display: flex; gap: 10px; }
 
-/*  Buttons (reuse style but rounder) */
+/* button styles for all three types r*/
 .primary-btn, .outline-btn, .ghost-btn {
   border-radius: 10px;
   padding: 10px 16px;
@@ -58,7 +64,7 @@ body { background: var(--background); color: var(--text); }
 .ghost-btn { color: var(--text); border-color: var(--edge); background: #fff; }
 .ghost-btn:hover { background: #f8fafb; transform: translateY(-1px); }
 
-/* Alerts */
+/* alert messages are seeable under the header */
 .alert {
   margin: 12px 0 18px;
   padding: 12px 14px;
@@ -74,19 +80,19 @@ body { background: var(--background); color: var(--text); }
 .alert-error   { border-color: #f5c6c2; background: #fdecea; }
 .alert-close { background: transparent; border: none; font-size: 18px; cursor: pointer; }
 
-/* Grid layout  */
+/* layout for donation form + impact box */
 .grid {
   display: grid;
   grid-template-columns: 1.25fr .75fr;
   gap: 18px;
 }
 
-/* CHANGED: when notifications are open, add a third column on the right */
+/* new column adding feature */
 .grid.grid--with-notifications {
   grid-template-columns: 1.25fr .75fr 0.8fr;
 }
 
-/* Card */
+/* boxes in white for each section */
 .card {
   background: var(--card-bg);
   border: 1px solid var(--edge);
@@ -96,9 +102,13 @@ body { background: var(--background); color: var(--text); }
 }
 .card h2 { margin: 0 0 14px; color: var(--accent); font-size: 20px; }
 
-/* Form */
+/* form layout for the donation submission */
 .form { display: grid; gap: 12px; }
+
+/* styling each form label and input group */
 .label { display: grid; gap: 8px; font-size: 14px; }
+
+/* styles for the text boxes.*/
 .input {
   width: 100%;
   padding: 12px 14px;
@@ -110,16 +120,23 @@ body { background: var(--background); color: var(--text); }
   color: var(--text);
   transition: border-color .15s ease, box-shadow .15s ease;
 }
+/* added a focusing animation for the input  */
 .input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(0,184,169,.15);
 }
+
+/* this is the description txt */
 textarea.input { resize: vertical; min-height: 96px; }
 .file-input { padding: 8px; }
+
+/* small hint text heere */
 .hint { color: #6b7280; font-size: 12px; }
+
+/* making the upload button full width */
 .form .primary-btn { width: 100%; }
 
-/* Impact*/
+/* stats section on the right side */
 .impact .stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -137,8 +154,9 @@ textarea.input { resize: vertical; min-height: 96px; }
 .stat-label { font-size: 12px; color: #6b7280; }
 .muted { color: #6b7280; font-size: 12px; margin-top: 8px; }
 
-/*History */
+/* donation history styles */
 .history { grid-column: 1 / span 2; }
+
 .history-head {
   display: flex;
   align-items: center;
@@ -146,39 +164,50 @@ textarea.input { resize: vertical; min-height: 96px; }
   gap: 12px;
   margin-bottom: 12px;
 }
+
+/* filters above the table */
 .filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
 .input.small { padding: 8px 10px; font-size: 13px; }
 
+/* styling around the table box */
 .table-wrap {
   overflow: auto;
   border: 1px solid var(--edge);
   border-radius: 12px;
   background: #fff;
 }
+
+/* table styling */
 .table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
 .table th, .table td {
   padding: 12px 14px;
   border-bottom: 1px solid var(--edge);
   text-align: left;
 }
+
 .table thead th { background: #f5f7f8; font-weight: 700; }
+
 .table tr:hover td { background: #fafcfc; }
 
-/* status chips */
+/* status labels in the history table */
 .badge {
   padding: 6px 10px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 800;
   text-transform: capitalize;
-  border: 1px solid var(--edge);
+  border: 1px solid var(--edge);  
   background: #fff;
 }
+
 .badge.pending     { background: #fff8e1; }
 .badge.accepted    { background: #e6f7f3; }
 .badge.rejected    { background: #fdecea; }
 .badge.distributed { background: #e7f0ff; }
 
+/* item icons shown */
 .thumb {
   width: 70px;
   height: 70px;
@@ -187,12 +216,12 @@ textarea.input { resize: vertical; min-height: 96px; }
   border: 1px solid var(--edge);
 }
 
-/* inline notifications card*/
+/* notifications panel card */
 .notifications-card {
   align-self: flex-start;
 }
 
-/* list + items */
+/* layout for notifications */
 .notification-list {
   list-style: none;
   padding: 0;
@@ -201,6 +230,7 @@ textarea.input { resize: vertical; min-height: 96px; }
   gap: 12px;
 }
 
+/* header inside notifications panel */
 .notification-header {
   display: flex;
   align-items: center;
@@ -220,6 +250,7 @@ textarea.input { resize: vertical; min-height: 96px; }
   border-radius: 8px;
 }
 
+/* each notification box */
 .notification-item {
   padding: 12px 14px;
   border: 1px solid var(--edge);
@@ -228,7 +259,7 @@ textarea.input { resize: vertical; min-height: 96px; }
   box-shadow: var(--shadow);
 }
 
-/* title + badge */
+/* top section of each notification */
 .notification-top {
   display: flex;
   justify-content: space-between;
@@ -240,8 +271,7 @@ textarea.input { resize: vertical; min-height: 96px; }
   color: var(--text);
   font-size: 14px;
 }
-
-/* reused from history table but slightly smaller */
+/* accepted tag */
 .badge-accepted {
   background: #e6f7f3;
   color: #017d63;
@@ -250,7 +280,7 @@ textarea.input { resize: vertical; min-height: 96px; }
   font-size: 12px;
   font-weight: 700;
 }
-
+/* denied tag */
 .badge-rejected {
   background: #fdecea;
   color: #b91c1c;
@@ -260,7 +290,7 @@ textarea.input { resize: vertical; min-height: 96px; }
   font-weight: 700;
 }
 
-/* Date under each item */
+/* date under notifications */
 .notification-date {
   display: block;
   margin-top: 6px;
@@ -268,7 +298,7 @@ textarea.input { resize: vertical; min-height: 96px; }
   color: #6b7280;
 }
 
-/* Errors inside the panel */
+/* error box inside the notificationss */
 .notification-error {
   padding: 12px;
   border: 1px solid #f5c6c2;
@@ -279,14 +309,26 @@ textarea.input { resize: vertical; min-height: 96px; }
   text-align: center;
 }
 
-/* Responsive */
+/* well placed layouts good for mobile or small screens */
 @media (max-width: 980px) {
   .grid { grid-template-columns: 1fr; }
-  .grid.grid--with-notifications { grid-template-columns: 1fr; } /* CHANGED: stack panel under on mobile */
+  .grid.grid--with-notifications { grid-template-columns: 1fr; }
   .history { grid-column: auto; }
   .header-actions { display: none; }
 }
 
 @media (max-width: 560px) {
   .impact .stats { grid-template-columns: 1fr; }
+}
+
+/* fixes text boxes overlapping and sticking out */
+/* looks better overall now  */
+.form .input,
+.form textarea.input,
+.form select.input,
+.form .file-input {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: block;
 }

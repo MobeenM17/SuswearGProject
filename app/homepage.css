@@ -1,80 +1,81 @@
 
-/* Homepage CSS*/
-/* Welcome section*/
+/* welcome section*/
 .Welcome-Info {
+  margin-top: 80px;
+  margin-bottom: 60px;
   text-align: center;
-  margin-bottom: 40px;
 }
 .Welcome-Info h1 {
-  font-size: 2.5rem;
+  font-size: 4rem;
   font-weight: bold; /* bold text*/
   color: var(--accent); 
-  margin-bottom: 10px;
+  margin-bottom: 5px; /*space between the text title and the description below */
 }
 .Welcome-Info p {
-  font-size: 1rem;
-  color: #555; 
-  margin-bottom: 25px;
+  font-size: 1.3rem;
+  margin-bottom: 30px;
 }
 /* Buttons for Login + Register*/
 .Home-Button-area {
-  display: flex;
   justify-content: center;
-  gap: 15px;
+  display: flex;
+  gap: 20px;
 }
 .button {
-  background-color: var(--accent);
-  color: #fff;
+  background-color: var(--accent); /*green colour*/
   border: none;
-  padding: 10px 22px;
-  border-radius: 25px;
   text-decoration: none;
-  font-weight: 600;
-  transition: 0.3s ease;
-}
-.button:hover {
-  background-color: var(--accent-hover);
+  color: #fff; /* text colour */
+  padding: 10px 22px;
 }
 .button-outline {
   background-color: transparent;
   border: 2px solid var(--accent);
   color: var(--accent);
 }
+.button:hover {
+  background-color: var(--accent-hover);
+}
 .button-outline:hover {
   background-color: var(--accent);
-  color: #fff;
+  color: #fff; 
 }
-/* Image*/
+/* image picture */
 .Welcome-Right-Box {
   text-align: center;
-  margin-top: 30px;
+  margin-top: 20px;
+  padding-bottom: 0px;
 }
 .Welcome-Image {
-  width: 320px;
+  padding: 20px; /* 3d affect with blur drop*/
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 500px;
   height: auto;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* How it works Section */
 
 .Home-Info-Section {
-  background-color: var(--card-bg);
-  border-radius: 10px;
-  padding: 40px 20px;
   margin-top: 50px;
+  padding: 10px 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  background-color: var(--card-bg);
+
 }
 .Home-Info-Section h2 {
   color: var(--accent);
   font-size: 1.8rem;
   font-weight: bold;
   margin-bottom: 15px;
+  text-align: center;
 }
 .Home-Info-Section p {
   color: #555;
   font-size: 1rem;
   line-height: 1.5;
+  text-align: center;
+
 }
 
 /* Categories Grid Section */
@@ -87,38 +88,34 @@
 
 .Category-Type {
   background-color: var(--footer-bg);
-  border: 1px solid var(--accent);
-  border-radius: 20px;
-  padding: 10px 0;
-  color: var(--accent);
-  font-weight: 500;
+  font-weight: 700;
   text-align: center;
+  padding: 10px 0;
+  color: #333;
   cursor: pointer;
-  transition: 0.3s;
 }
 
 .Category-Type:hover {
-  background-color: var(--accent);
   color: white;
+  background-color: var(--accent);
 }
 
 
 /* Footer Section */
 footer {
   background-color: var(--footer-bg);
+  font-size: 1rem;
   text-align: center;
-  padding: 20px;
-  font-size: 0.9rem;
+  padding: 30px;
   color: #333;
-  border-top: 1px solid #cbd5d1;
   margin-top: 60px;
 }
 
 /* SHOP button */
 .button-shop {
   background-color: var(--accent);
-  color: white;
   border: 2px solid var(--accent);
+  color: white;
 }
 
 .button-shop:hover {
