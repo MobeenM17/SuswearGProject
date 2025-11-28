@@ -45,6 +45,45 @@ export default function ReportPage() {
     })();
   }, []);
 
+  function generateReportText(): string { // this generates the report text file for download
+  if (rows.length > 0) {// if the rows length is more than 0 it means its a
+    // donor-specific report
+    let txt = `Donor Report for: ${selectedEmail}\n\n`; // report header
+    rows.forEach((r) => {
+      txt += `Donation ID: ${r.donationId}\n`; // each donation details to add to the text file
+      txt += `Description: ${r.description}\n`;
+      txt += `Category: ${r.category}\n`;
+      txt += `CO2 Saved: ${r.co2Saved} kg\n\n`;
+    });
+
+    txt += `TOTAL CO2 SAVED: ${totalCO2} kg\n`;
+    txt += `TOTAL LANDFILL SAVED: ${landfillSaved} kg\n`;
+
+    return txt;
+  }
+
+  // global report
+  return (
+    `GLOBAL SUMMARY REPORT\n\n` + // report header
+    `Total Donations: ${totalDonation}\n` + // total donations
+    `Total CO2 Saved: ${totalCO2} kg\n` + // total co2 saved
+    `Landfill Saved: ${landfillSaved} kg\n` // total landfill saved
+  );
+}
+
+function handleDownload(): void { // this handles the download report button feature via the method of creating a blob and link to download the file
+  const text = generateReportText(); // gets the report text for the report file 
+  const blob = new Blob([text], { type: "text/plain" }); // creates a blob object with the text data
+  const url = URL.createObjectURL(blob); // creates a URL for the blob object
+
+  const link = document.createElement("a"); // creates a link element 
+  link.href = url; // sets the href attribute of the link to the blob URL
+  link.download = "report.txt"; // sets the download attribute with the filename
+  link.click(); // programmatically clicks the link to trigger the download
+
+  URL.revokeObjectURL(url);
+}
+
   async function handleGenerate() {
     // this clears the error message and shows the loading data 
     setError(""); 
@@ -110,6 +149,7 @@ export default function ReportPage() {
   }
 
   return (
+
     <div className="report-container">
       <div className="report-header">
         <h1>CO2 Emissions Report</h1>
@@ -135,6 +175,9 @@ export default function ReportPage() {
       {/* shows the report after admin click generates */}
       {generated && (
         <div className="report-output">
+          <button className="download-btn" onClick={handleDownload}> {/* this is the Download report button feature*/}
+            Download Report
+          </button>
                 {/* if admin click a donor and click generate report shows the first message / if user didnt click a donor and clicks total - displays the global*/}
           <h2> {selectedEmail? `The Donor Report for: ${selectedEmail}`: "Global CO2 and Landfill Summary"}</h2> 
           {rows.length > 0 ? (
