@@ -17,7 +17,7 @@
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
 }
 
-/* The ADmin header */
+/* The Admin header */
 .admin-header {
   display: flex;
   justify-content: space-between;
@@ -48,7 +48,7 @@
   background: var(--accent);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 /* The welcome section*/
