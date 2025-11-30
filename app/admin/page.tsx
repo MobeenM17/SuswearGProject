@@ -27,9 +27,7 @@ export default function AdminDashboard() {
         <header className="admin-header">
           <div className="header-left">
             <h1>Admin Dashboard</h1>
-            <span className="back-link">
-              Welcome back, <strong>{adminName}</strong>!
-            </span>
+            <span className="back-link"></span>
           </div>
 
           {/* i added a logout button as there wasnt one in the first place*/}
