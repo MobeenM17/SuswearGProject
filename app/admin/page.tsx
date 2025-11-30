@@ -48,21 +48,21 @@ export default function AdminDashboard() {
           <div className="card"> {/* a card is basically a container that has some styling with it*/}
             <h3>Reports Overview</h3>
             <p>View sustainability reports submitted by users.</p>
-            <Link href="/admin/report" className="primary-btn">Go to Reports</Link> {/* this link will take you to the reports page by going into the admin/report directory inside  of the application*/}
+            <Link href="/admin/report" className="primary-btn" prefetch={false}>Go to Reports</Link> {/* this link will take you to the reports page by going into the admin/report directory inside  of the application*/}
           </div>
 
           {/* this creates staff memebers, i think the admin should only be allowed to add staff members and they shouldnt be able to register through the user registration page */}
           <div className="card">
             <h3>Create Staff Account</h3>
             <p>Add new staff members to help manage users and sustainability tasks.</p>
-            <Link href="/admin/create-staff" className="primary-btn">Create Staff</Link> {/* this link will take you to the create staff page by going into the admin/create-staff directory inside  of the application*/}
+            <Link href="/admin/create-staff" className="primary-btn"prefetch={false}>Create Staff</Link> {/* this link will take you to the create staff page by going into the admin/create-staff directory inside  of the application*/}
           </div>
 
           {/* this allows the admin to promote donors into staff members if they want to, the data of that user will be removed if they are de promoted*/}
           <div className="card">
             <h3>Promote / Depromote</h3>
             <p>Promote donors to staff or depromote staff back to donors.</p>
-            <Link href="/admin/promote" className="primary-btn">Manage Roles</Link>
+            <Link href="/admin/promote" className="primary-btn" prefetch={false}>Manage Roles</Link>
           </div>
         </div>
       </div>
