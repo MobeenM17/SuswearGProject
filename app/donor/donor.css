@@ -310,15 +310,47 @@ textarea.input { resize: vertical; min-height: 96px; }
 }
 
 /* well placed layouts good for mobile or small screens */
-@media (max-width: 980px) {
-  .grid { grid-template-columns: 1fr; }
-  .grid.grid--with-notifications { grid-template-columns: 1fr; }
-  .history { grid-column: auto; }
-  .header-actions { display: none; }
+@media (max-width: 560px) {
+  .donor-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+/*the header left h1 */
+  .header-left h1 {
+    font-size: 22px;
+  }
+/*the back link*/
+  .back-link {
+    font-size: 12px;
+  }
+/*action button containers*/
+  .header-actions {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+ /*this is for the action buttons*/
+  .header-actions button {
+    flex: 1;
+    text-align: center;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
 }
 
+
 @media (max-width: 560px) {
-  .impact .stats { grid-template-columns: 1fr; }
+  .grid,
+  .grid.grid--with-notifications {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+/*the notifications panel card*/
+  .notifications-card {
+    order: -1; /* Move notifications above the form if needed */
+  }
 }
 
 /* fixes text boxes overlapping and sticking out */
