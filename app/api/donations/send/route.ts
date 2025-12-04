@@ -9,6 +9,8 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const donationId: number = Number(body?.donationId);
+    const charityId: number = Number(body?.charityId);
+
     if (!donationId)
       return NextResponse.json(
         { error: "donationId required" },
@@ -18,12 +20,14 @@ export async function POST(req: NextRequest) {
     const db = await openDb();
 
     // Update Inventory from Arriving -> InStock
+    
     await db.run(
       `UPDATE Inventory
        SET Status = 'InStock',
+       Charity_ID = ?,
            Updated_At = datetime('now')
        WHERE Donation_ID = ?`,
-      [donationId]
+      [charityId, donationId]
     );
 
     // Update Donation sent status

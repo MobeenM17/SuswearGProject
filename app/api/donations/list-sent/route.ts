@@ -17,7 +17,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
 
     const db = await openDb();
-
+    
     // Get Donor_ID
     const donor = await db.get<{ Donor_ID: number }>(
       "SELECT Donor_ID FROM Donor WHERE User_ID = ?",
