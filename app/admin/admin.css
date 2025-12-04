@@ -11,6 +11,7 @@
   flex-direction: column;
   gap: 24px;
   transition: box-shadow 0.2s ease, transform 0.15s ease;
+  font-size: 17px; 
 }
 
 .dashboard-bubble:hover {
@@ -24,6 +25,7 @@
   align-items: center;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--edge);
+  font-size: 17px; 
 }
 
 .header-actions {
@@ -37,11 +39,12 @@
   background: transparent;
   border: 1px solid var(--accent);
   color: var(--accent);
-  padding: 8px 14px;
+  padding: 10px 16px;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-size: 18px;
 }
 
 .ghost-btn:hover {
@@ -53,13 +56,13 @@
 
 /* The welcome section*/
 .welcome-section h2 {
-  font-size: 24px;
+  font-size: 28px; 
   color: var(--accent);
   margin-bottom: 12px;
 }
 
 .welcome-section p {
-  font-size: 15px;
+  font-size: 20px; 
   color: var(--text);
   margin-bottom: 10px;
 }
@@ -71,11 +74,11 @@
 }
 
 .welcome-section li {
-  font-size: 15px;
+  font-size: 20px;
   margin-bottom: 8px;
   background: #f5fafa;
   border-radius: 10px;
-  padding: 8px 12px;
+  padding: 10px 14px; /* more padding */
   display: flex;
   align-items: center;
   gap: 6px;
@@ -92,18 +95,19 @@
   background: #f9fbfb;
   border: 1px solid var(--edge);
   border-radius: 12px;
-  padding: 18px;
+  padding: 20px; /* slightly larger */
   box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  font-size: 22px;
 }
 
 .admin-tools .card h3 {
   color: var(--accent);
-  font-size: 18px;
+  font-size: 20px; /* larger */
   margin-bottom: 12px;
 }
 
 .admin-tools .card p {
-  font-size: 14px;
+  font-size: 20px; 
   color: var(--text);
   margin-bottom: 12px;
 }
@@ -111,7 +115,7 @@
 /* the buttons on the page*/
 .admin-tools .primary-btn {
   width: 100%;
-  padding: 10px 14px;
+  padding: 12px 16px; /* larger */
   border-radius: 8px;
   background: var(--accent);
   color: #fff;
@@ -119,6 +123,7 @@
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-size: 25px;
 }
 
 .admin-tools .primary-btn:hover {
