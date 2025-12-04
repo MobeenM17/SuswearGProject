@@ -14,38 +14,38 @@ interface Item {
   Season_Type?: string | null;
   Photo_URLs?: string[] | null;
   Charity_ID: number | null;
-  Charity_Name: string | null;
+  Charity_Name: string | null;// Added Charity_Name to the Item interface 
 }
 
 interface Charity {
   Charity_ID: number;
-  Charity_Name: string;
+  Charity_Name: string;// Define Charity interface
 }
 
 export default function CharityShop() {
-  const router = useRouter(); // <-- initialize router
+  const router = useRouter(); //this is the router instance
 
-  const [items, setItems] = useState<Item[]>([]);
-  const [charities, setCharities] = useState<Charity[]>([]);
-  const [selectedCharity, setSelectedCharity] = useState<number | "">("");
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState("");
+  const [items, setItems] = useState<Item[]>([]);// State to hold inventory items
+  const [charities, setCharities] = useState<Charity[]>([]);// State to hold list of charities
+  const [selectedCharity, setSelectedCharity] = useState<number | "">("");// State for selected charity filter
+  const [loading, setLoading] = useState(true);// State to track loading status
+  const [err, setErr] = useState("");// State to hold error messages
 
   const filteredItems = selectedCharity
-    ? items.filter((item) => item.Charity_ID === selectedCharity)
+    ? items.filter((item) => item.Charity_ID === selectedCharity)// Filter items based on selected charity
     : items;
 
   // Load charities
   useEffect(() => {
     const loadCharities = async () => {
       try {
-        const res = await fetch("/api/charity/list", { cache: "no-store" });
+        const res = await fetch("/api/charity/list", { cache: "no-store" });// Fetch list of charities from API
         const data = await res.json();
-        if (Array.isArray(data)) setCharities(data);
+        if (Array.isArray(data)) setCharities(data);// Set charities if data is an array
         else setCharities([]);
       } catch (e) {
-        console.error("Failed to load charities:", e);
-        setCharities([]);
+        console.error("Failed to load charities:", e);// Log any errors
+        setCharities([]);// Set charities to empty array on error
       }
     };
     loadCharities();
@@ -53,20 +53,20 @@ export default function CharityShop() {
 
   // Load items
   useEffect(() => {
-    const loadItems = async () => {
+    const loadItems = async () => {// Function to load inventory items
       try {
-        const res = await fetch("/api/charity/inventory", { cache: "no-store" });
+        const res = await fetch("/api/charity/inventory", { cache: "no-store" });// Fetch inventory items from API
         const data = await res.json();
-        if (data && Array.isArray(data.items)) setItems(data.items);
+        if (data && Array.isArray(data.items)) setItems(data.items);//this sets items if data.items is an array
         else setItems([]);
       } catch (e) {
-        setErr("Something went wrong loading items.");
+        setErr("Something went wrong loading items.");// Set error message on failure
         setItems([]);
       } finally {
-        setLoading(false);
+        setLoading(false);// Set loading to false after attempt
       }
     };
-    loadItems();
+    loadItems();// Call the function to load items on component mount
   }, []);
 
   return (
@@ -79,10 +79,10 @@ export default function CharityShop() {
         >
           ← Back
         </button>
-
+         {/*this is the buttons for the header right side*/}
         <div className="Header-Right-Buttons">
-          <a className="button" href="/login">Login</a>
-          <a className="button button-outline" href="/register">Register</a>
+          <a className="button" href="/login">Login</a> {/* Login Button */}
+          <a className="button button-outline" href="/register">Register</a> {/* Register button*/}
         </div>
       </header>
 
@@ -114,6 +114,7 @@ export default function CharityShop() {
             </select>
           </div>
 
+           {/*this is the shops grid and how the items are layed out */}
           <div className="shop-grid">
             {filteredItems.map((it) => (
               <div className="shop-card" key={it.Inventory_ID}>
@@ -139,7 +140,7 @@ export default function CharityShop() {
                   <p className="muted">
                     Weight: {it.WeightKg ? `${it.WeightKg} kg` : "N/A"}
                   </p>
-                  <p className="muted">Charity: {it.Charity_Name || "Unknown"}</p>
+                  <p className="muted">Charity: {it.Charity_Name}</p>
                   {it.Size_Label && <p>Size: {it.Size_Label}</p>}
                   {it.Gender_Label && <p>Gender: {it.Gender_Label}</p>}
                   {it.Season_Type && <p>Season: {it.Season_Type}</p>}

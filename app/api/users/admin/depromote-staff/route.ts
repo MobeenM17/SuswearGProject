@@ -5,9 +5,9 @@ import { openDb } from "@/db/db";
 export async function POST(req: Request) {
   try {
     const { userId } = await req.json();
-    if (!userId) return NextResponse.json({ error: "userId required" }, { status: 400 });
+    if (!userId) return NextResponse.json({ error: "userId required" }, { status: 400 });// Validate that userId is provided
 
-    const db = await openDb();
+    const db = await openDb();// Open database connection
 
     // Get staff row
     const staff = await db.get(
@@ -31,6 +31,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    return NextResponse.json({ error: "Server error" }, { status: 500 });// Ensure any errors are logged and a generic error response is returned.
   }
 }

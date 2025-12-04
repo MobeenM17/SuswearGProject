@@ -63,7 +63,7 @@ export async function GET(req: Request) {
       order by d.Submitted_At desc
       `,
       [donor.Donor_ID]
-    );
+    );// Get all donations made by the donor associated with the current user, including category names and optional photo URLs, ordered by submission date.
 
     return NextResponse.json(donations);
   } catch (err) {
@@ -72,5 +72,5 @@ export async function GET(req: Request) {
       { error: "Something went wrong" },
       { status: 500 }
     );
-  }
+  }// Ensure any errors are logged and a generic error response is returned.
 }

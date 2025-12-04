@@ -1,6 +1,6 @@
-// app/api/users/donors/route.ts
+
 import { NextResponse } from "next/server";
-import { openDb } from "@/db/db";
+import { openDb } from "@/db/db";// Import database connection utility
 
 export async function GET() {
   const db = await openDb();
@@ -9,6 +9,7 @@ export async function GET() {
      FROM Users u
      JOIN Donor d ON d.User_ID = u.User_ID
      ORDER BY u.Full_Name`,
-  );
-  return NextResponse.json(rows);
+  );// Retrieve all users who are donors, ordered by full name
+
+  return NextResponse.json(rows);// Return the list of donors as a JSON response
 }

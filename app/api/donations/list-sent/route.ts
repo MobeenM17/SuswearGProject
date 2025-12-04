@@ -49,12 +49,13 @@ export async function GET(req: Request) {
          AND d.Status = 'Accepted'
          AND d.Tracking IS NOT NULL
        ORDER BY d.Submitted_At DESC`,
-      [donor.Donor_ID]
+      [donor.Donor_ID]// Get all donations made by the donor that have been accepted and have tracking information, along with their inventory status, ordered by submission date descending.
+      //from Donations table left-joined with Inventory table on Donation_ID
     );
 
     return NextResponse.json(donations);
   } catch (err) {
     console.error("list-sent error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
-  }
+  }// Ensure any errors are logged and a generic error response is returned.
 }
