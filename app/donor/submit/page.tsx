@@ -122,10 +122,10 @@ export default function DonationSubmitPage() {
         <h2>Donation Details</h2>
         <form onSubmit={handleSubmit} className="form">
           <label className="label">
-            <span>Description</span>
+            <span>Description: Item + Condition + Size Lable + Gender + Season</span>
             <textarea
               className="input"
-              placeholder="e.g. Winter coat, good condition"
+              placeholder="e.g. Black coat, good condition (Condition Grade), Medium (Size Lable), Male (Gender), Winter (Season) "
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
