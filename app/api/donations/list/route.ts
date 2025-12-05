@@ -11,7 +11,7 @@ type StaffListRow = {
   Condition_Grade: string | null;
   Description: string;
   Submitted_At: string;
-  PhotoUrl?: string | null; // this is to show the image preview
+  PhotoUrl?: string | null; // this is to show the images
 }
 
 

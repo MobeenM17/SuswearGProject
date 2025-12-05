@@ -1,16 +1,15 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
-import "./report.css"; // This links to the CSS file for styling
+import "./report.css"; // this links the report css to this page
 
-// Defines what a "Donor" looks like (same as your database)
+// this stores Donor data 
 type Donor = {
   User_ID: number;
   Full_Name: string;
   Email: string;
 };
 
-// Defines what one line in the CO₂ report looks like
+// this is used to store each data for the report data
 type ReportItem = {
   donationId: number;
   description: string;
@@ -19,146 +18,176 @@ type ReportItem = {
 };
 
 export default function ReportPage() {
-  // ---------- STATE VARIABLES ----------
-  // These are used to store values in memory while the page is running
-  const [donors, setDonors] = useState<Donor[]>([]); // List of all donors for dropdown
-  const [selectedEmail, setSelectedEmail] = useState<string>(""); // The chosen donor
-  const [rows, setRows] = useState<ReportItem[]>([]); // Donation data rows
-  const [totalCO2, setTotalCO2] = useState<number>(0); // Total CO₂ saved
-  const [landfillSaved, setLandfillSaved] = useState<number>(0); // Total landfill saved
-  const [loading, setLoading] = useState<boolean>(false); // Shows "Generating..."
-  const [error, setError] = useState<string>(""); // Shows errors if something fails
-  const [generated, setGenerated] = useState<boolean>(false); // Used to hide/show report
-
-  // ---------- STEP 1: FETCH ALL DONORS ----------
+  
+  //use to store the data and set data aswell - also used to show error messages / loading process - and hide the report aswell
+  const [donors, setDonors] = useState<Donor[]>([]); 
+  const [selectedEmail, setSelectedEmail] = useState<string>(""); 
+  const [rows, setRows] = useState<ReportItem[]>([]); 
+  const [totalDonation, setTotalDonation] = useState<number>(0); 
+  const [totalCO2, setTotalCO2] = useState<number>(0); 
+  const [landfillSaved, setLandfillSaved] = useState<number>(0); 
+  const [loading, setLoading] = useState<boolean>(false); 
+  const [error, setError] = useState<string>(""); 
+  const [generated, setGenerated] = useState<boolean>(false); 
   useEffect(() => {
-    // Runs only once when the page loads
     (async () => {
       try {
-        const res = await fetch("/api/users/donors"); // Ask backend for all donor data
-        if (!res.ok) throw new Error("Failed to load donors."); // If not OK → throw error
-        const data: Donor[] = await res.json(); // Convert backend data into JSON
-        setDonors(data); // Store donor list in state
-      } catch (e) {
+        const res = await fetch("/api/users/donors"); // this gets all the back end data
+        if (!res.ok) throw new Error("Failed to load donors."); // shows an error if it cant get the back end data
+        const data: Donor[] = await res.json(); // gets the backend data into JSON
+        setDonors(data); // stores donor data
+      } 
+      catch (e) 
+      {
         console.error(e);
         setError("Could not load donors from the database."); // Display simple error
       }
     })();
   }, []);
 
-  // ---------- STEP 2: GENERATE REPORT ----------
+  function generateReportText(): string { // this generates the report text file for download
+  if (rows.length > 0) {// if the rows length is more than 0 it means its a
+    // donor-specific report
+    let txt = `Donor Report for: ${selectedEmail}\n\n`; // report header
+    rows.forEach((r) => {
+      txt += `Donation ID: ${r.donationId}\n`; // each donation details to add to the text file
+      txt += `Description: ${r.description}\n`;
+      txt += `Category: ${r.category}\n`;
+      txt += `CO2 Saved: ${r.co2Saved} kg\n\n`;
+    });
+
+    txt += `TOTAL CO2 SAVED: ${totalCO2} kg\n`;
+    txt += `TOTAL LANDFILL SAVED: ${landfillSaved} kg\n`;
+
+    return txt;
+  }
+
+  // global report
+  return (
+    `GLOBAL SUMMARY REPORT\n\n` + // report header
+    `Total Donations: ${totalDonation}\n` + // total donations
+    `Total CO2 Saved: ${totalCO2} kg\n` + // total co2 saved
+    `Landfill Saved: ${landfillSaved} kg\n` // total landfill saved
+  );
+}
+
+function handleDownload(): void { // this handles the download report button feature via the method of creating a blob and link to download the file
+  const text = generateReportText(); // gets the report text for the report file 
+  const blob = new Blob([text], { type: "text/plain" }); // creates a blob object with the text data
+  const url = URL.createObjectURL(blob); // creates a URL for the blob object
+
+  const link = document.createElement("a"); // creates a link element 
+  link.href = url; // sets the href attribute of the link to the blob URL
+  link.download = "report.txt"; // sets the download attribute with the filename
+  link.click(); // programmatically clicks the link to trigger the download
+
+  URL.revokeObjectURL(url);
+}
+
   async function handleGenerate() {
-    setError(""); // Clear old errors
-    setGenerated(false); // Hide old results
-    setLoading(true); // Show "Generating..." button
+    // this clears the error message and shows the loading data 
+    setError(""); 
+    setGenerated(false); 
+    setLoading(true); 
 
     try {
-      // Send donor email (or null for site-wide) to backend API
+      // this send the donor email/null for all donors to the database
       const res = await fetch("/api/reports/co2", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ donorEmail: selectedEmail || null }),
       });
-
-      // If server returns an error, show message
       if (!res.ok) {
         const problem = await res.json().catch(() => ({}));
-        setError(problem.error || "Error generating report.");
+        setError(problem.error || "Error generating report."); //error message incase server ran into an issue
         return;
       }
-
       // Convert response into usable data
       const data = await res.json();
 
-      // If the scope = "all", that means a site-wide report (totals only)
+      // this shows the all the donors total landfill + co2
       if (data.scope === "all") {
+        
+        setTotalDonation(data.totalDonations ?? 0);
         setTotalCO2(data.totalCO2);
         setLandfillSaved(data.landfillSavedKG);
-        setRows([]); // Clear table rows (since no per-donor data)
-      } else {
-        // Otherwise, per-donor report (with detailed table)
+        setRows([]); // this clears the table rows as there no tables needing to show donors
+      } 
+      else 
+      {
+        // individual donor contribution
+        setTotalDonation(data.totalCO2 ?? 0);
         setTotalCO2(data.totalCO2);
         setLandfillSaved(data.landfillSavedKG);
-        const items: ReportItem[] = (data.donations || []).map((d: {
-          donationId: number;
-          description: string;
-          type: string;
-          co2Saved: number;
-        }) => ({
-          donationId: d.donationId,
+        const items: ReportItem[] = (data.donations || []).map((d: 
+          {
+          donationId: number; //gets the donation id
+          description: string; //gets the description
+          type: string; //gets type data
+          co2Saved: number; //gets co2 data
+        }
+      ) => ({
+          donationId: d.donationId, //assigns it to the table row
           description: d.description,
           category: d.type,
           co2Saved: d.co2Saved,
         }));
-        setRows(items);
+        setRows(items); //stores it in the set rows so it can be filled out
       }
 
-      setGenerated(true); // Show results
-    } catch (e) {
+      setGenerated(true); // Show thes results
+    } 
+    catch (e) 
+    {
       console.error(e);
-      setError("Network error while generating report."); // Simple network error message
-    } finally {
-      setLoading(false); // Hide "Generating..." again
+      setError("The was an network error when generating report error."); // if there was an error for generating a report shows this.
+    } 
+    finally //runs after all process is done at the end
+    {
+      setLoading(false); // gets rid of the generated data.
     }
   }
 
-  // ---------- STEP 3: RENDER PAGE ----------
   return (
-    <div className="report-wrap">
-      {/* --- Top header --- */}
+
+    <div className="report-container">
       <div className="report-header">
-        <h1>CO₂ Emissions Report</h1>
+        <h1>CO2 Emissions Report</h1>
         <a className="back-link" href="/admin">
-          ← Back to Dashboard
+          Back to Dashboard
         </a>
       </div>
 
-      {/* --- Donor dropdown + Generate button --- */}
-      <div className="selector">
-        <select
-          className="dropdown"
-          value={selectedEmail}
-          onChange={(e) => setSelectedEmail(e.target.value)}
-        >
-          {/* Default option to generate full site-wide summary */}
-          <option value="">🌍 All Donors (site-wide)</option>
-
-          {/* List all donors fetched from the database */}
+      {/* drop down for donors */}
+      <div className="select-data">
+        <select className="dropdown"  value={selectedEmail} onChange={(e) => setSelectedEmail(e.target.value)}>
+          <option value="">All Data</option> {/* this is the first option and is the default option that shows all the total donor data*/}
+          {/* shows all the donor from the database */}
           {donors.map((d) => (
-            <option key={d.User_ID} value={d.Email}>
-              {d.Full_Name} ({d.Email})
-            </option>
+            <option key={d.User_ID} value={d.Email}>{d.Full_Name}({d.Email})</option>
           ))}
         </select>
-
-        <button className="primary-btn" onClick={handleGenerate} disabled={loading}>
+        <button className="generate-btn" onClick={handleGenerate} disabled={loading}>
           {loading ? "Generating..." : "Generate Report"}
         </button>
       </div>
-
-      {/* --- Show errors if any --- */}
-      {error && <p className="error">{error}</p>}
-
-      {/* --- Show report output after generation --- */}
+      {error && <p className="error">{error}</p>} {/* display error message incase any message */}
+      {/* shows the report after admin click generates */}
       {generated && (
         <div className="report-output">
-          <h2>
-            {selectedEmail
-              ? `Donor Report for: ${selectedEmail}`
-              : "Global CO₂ and Landfill Summary"}
-          </h2>
-
-          {/* If we have rows, show the full donation table */}
+          <button className="download-btn" onClick={handleDownload}> {/* this is the Download report button feature*/}
+            Download Report
+          </button>
+                {/* if admin click a donor and click generate report shows the first message / if user didnt click a donor and clicks total - displays the global*/}
+          <h2> {selectedEmail? `The Donor Report for: ${selectedEmail}`: "Global CO2 and Landfill Summary"}</h2> 
           {rows.length > 0 ? (
             <table className="report-table">
-              <thead>
-                <tr>
+              <thead><tr>
                   <th>Donation ID</th>
                   <th>Description</th>
                   <th>Category</th>
-                  <th>CO₂ Saved (kg)</th>
-                </tr>
-              </thead>
+                  <th>CO2 Saved (kg)</th>
+                </tr></thead>
               <tbody>
                 {rows.map((r) => (
                   <tr key={r.donationId}>
@@ -168,22 +197,21 @@ export default function ReportPage() {
                     <td>{r.co2Saved}</td>
                   </tr>
                 ))}
-                <tr>
-                  <td colSpan={3}>
-                    <strong>Total CO₂ Saved:</strong>
-                  </td>
-                  <td>
+                <tr><td colSpan={3}>
+                    <strong>Total CO2 Saved:</strong>
+                  </td><td>
                     <strong>{totalCO2}</strong>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </td></tr>
+              </tbody></table>
           ) : (
-            // If it's a global report → show simple summary box
+            // shows the global total report
             <div className="summary-box">
-              <p><strong>Total Donations:</strong> Saved in database</p>
-              <p><strong>Total CO₂ Saved:</strong> {totalCO2} kg</p>
-              <p><strong>Landfill Saved:</strong> {landfillSaved} kg</p>
+              {/* shows total donation - gets the data and shows it here*/}
+              <p><strong>Total Donations:</strong> {totalDonation}</p> 
+             {/* shows total co2 saved - gets the data and shows it here*/}
+              <p><strong>Total CO2 Saved (in kg):</strong> {totalCO2} kg</p> 
+              {/* shows landfill saved - gets the data and shows it here*/}
+              <p><strong>Landfill Saved (in kg):</strong> {landfillSaved} kg</p>
             </div>
           )}
         </div>

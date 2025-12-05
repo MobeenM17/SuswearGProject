@@ -27,24 +27,8 @@ interface NotificationRow {
   Generated_At: string;
 }
 
-
-//the catagories
-const CATEGORIES = [
-  "Clothing",
-  "Men",
-  "Women",
-  "Children",
-  "Coats & Jackets",
-  "Tops",
-] as const;
-
 export default function DonorDashboard() {
   const router = useRouter();
-
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState<(typeof CATEGORIES)[number] | "">("");
-  const [weightKg, setWeightKg] = useState<number | "">("");
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
 
   const [message, setMessage] = useState<{
     type: "success" | "error";
@@ -110,77 +94,17 @@ export default function DonorDashboard() {
 
   //  Impact calculations 
   const totalItems = history.length;
-  const totalWeight = history.reduce(
-    (acc, d) => acc + (d.WeightKg ?? 0),
-    0
-  );
+  const totalWeight = history.reduce((acc, d) => acc + (d.WeightKg ?? 0),  0);
   const co2Saved = +(totalWeight * 2.5).toFixed(2);
-
-  //  Image handler 
-  const onPhotoChange = (file: File | null) => {
-    setPhotoFile(null);
-    if (!file) return;
-    if (!["image/jpeg", "image/png"].includes(file.type)) {
-      setMessage({ type: "error", text: "Image must be JPG or PNG." });
-      return;
-    }
-    setPhotoFile(file);
-    setMessage(null);
-  };
-
-  const resetForm = () => {
-    setDescription("");
-    setCategory("");
-    setWeightKg("");
-    setPhotoFile(null);
-  };
-
-  //Submit donation 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!description.trim() || !category || !weightKg || !photoFile) {
-      setMessage({
-        type: "error",
-        text: "You must complete all fields including an image.",
-      });
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      formData.append("description", description);
-      formData.append("categoryId", category);
-      formData.append(
-        "weightKg",
-        typeof weightKg === "number" ? weightKg.toString() : String(weightKg)
-      );
-      formData.append("photo", photoFile);
-
-      const res = await fetch("/api/donations/create", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to submit donation");
-
-      setMessage({ type: "success", text: "Donation submitted successfully." });
-      resetForm();
-      await loadHistory();
-    } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : "Unknown error";
-      console.error(errorMsg);
-      setMessage({ type: "error", text: errorMsg });
-    }
-  };
 
   // Logout
   const handleLogout = async () => {
     try {
       await fetch("/api/logout", { method: "POST", credentials: "include" });
       router.push("/login");
-    } catch {
+    } 
+    catch 
+    {
       alert("Failed to log out.");
     }
   };
@@ -196,17 +120,19 @@ export default function DonorDashboard() {
       <header className="donor-header">
         <div className="header-left">
           <span className="back-link" onClick={() => router.push("/")}>
-            ← Back to homepage
+             Back to homepage
           </span>
           <h1>Donor Dashboard</h1>
         </div>
         <div className="header-actions">
-          <span
+          <button
+            type="button"
             className="outline-btn"
-            onClick={() => router.push("/donor")}
+            onClick={() => router.push("/donor/submit")}
           >
-            Dashboard
-          </span>
+            Submit Donation
+          </button>
+
           <button
             type="button"
             className="outline-btn"
@@ -241,83 +167,22 @@ export default function DonorDashboard() {
             onClick={() => setMessage(null)}
             aria-label="Dismiss"
           >
-            ×
+            x
           </button>
         </div>
       )}
 
       {/* add a modifer class when notifications are visible */}
       <div className={`grid ${showNotifications ? "grid--with-notifications" : ""}`}>
-        {/* Submit Donation */}
+
         <section className="card">
-          <h2>Submit Donation</h2>
-          <form onSubmit={handleSubmit} className="form">
-            <label className="label">
-              <span>Description</span>
-              <textarea
-                className="input"
-                placeholder="e.g. Winter coat, good condition"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={3}
-                required
-              />
-            </label>
-
-            <label className="label">
-              <span>Category</span>
-              <select
-                className="input"
-                value={category}
-                onChange={(e) =>
-                  setCategory(e.target.value as (typeof CATEGORIES)[number])
-                }
-                required
-              >
-                <option value="">Select…</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="label">
-              <span>Weight (kg)</span>
-              <input
-                className="input"
-                type="number"
-                min={0}
-                step={0.1}
-                value={weightKg}
-                onChange={(e) =>
-                  setWeightKg(
-                    e.target.value === "" ? "" : Number(e.target.value)
-                  )
-                }
-                required
-              />
-            </label>
-
-            <label className="label">
-              <span>Upload Item Image</span>
-              <input
-                className="input file-input"
-                type="file"
-                accept="image/png,image/jpeg"
-                onChange={(e) => onPhotoChange(e.target.files?.[0] ?? null)}
-                required
-              />
-              <small className="hint">JPG or PNG only.</small>
-            </label>
-
-            <button className="primary-btn" type="submit">
-              Upload
-            </button>
-          </form>
-        </section>
-
+          <h2>Overview</h2>
+          <p>Use <strong>Submit Donation</strong> to donate a new item to one of the charities that we are partnered with. You can view your donation history and track each of your donation status updates on the dashboard.
+          </p>
+            <p className="muted">
+              Notifications will let you know when staff <strong>Accept</strong>, <strong>Reject</strong> or has <strong>Distribute</strong> your donations.
+              </p>
+              </section>
         {/* Impact */}
         <section className="card impact">
           <h2>Your Impact</h2>
@@ -332,10 +197,10 @@ export default function DonorDashboard() {
             </div>
             <div className="stat">
               <div className="stat-value">{co2Saved} kg</div>
-              <div className="stat-label">Estimated CO₂ saved</div>
+              <div className="stat-label">Estimated CO2 saved</div>
             </div>
           </div>
-          <p className="muted">*CO₂ estimate is approximate.</p>
+          <p className="muted">*CO2 estimate is approximate.</p>
         </section>
 
         {/* notifications card that docks to the right */}

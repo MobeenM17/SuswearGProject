@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import styles from "./notifications.module.css";
 
-//gets the table rows
 type NotificationRow = {
   Notification_ID: number;
   Donation_ID: number;
@@ -10,14 +9,11 @@ type NotificationRow = {
   Generated_At: string;
 };
 
-
 export default function DonorNotifications() {
   const [rows, setRows] = useState<NotificationRow[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-
-  //when user opens up the notification
   useEffect(() => {
     (async () => {
       try {

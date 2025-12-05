@@ -6,15 +6,17 @@ import { openDb } from "@/db/db";
 // Staff reviews a donation:
 export async function PUT(req: NextRequest) {
   try {
-    // session cookies (auth)
-    const role = req.cookies.get("session_role")?.value;
-    const staffUserId = Number(req.cookies.get("session_user_id")?.value || 0);
+    // session cookies (auth) 
+    const role = req.cookies.get("session_role")?.value; // assigns session role from user logged in account - role
+    const staffUserId = Number(req.cookies.get("session_user_id")?.value || 0); // assigns session user id from user logged in account - user id from database
 
-    if (role !== "Staff" || !staffUserId) {
+    //if the role doesnt = staff + user id isnt a staff id - it gives them an error message of them being unauthorized
+    if (role !== "Staff" || !staffUserId) 
+    {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Read payload
+    // reads the payload
     const body = await req.json();
     const donationId: number = Number(body?.donationId);
     const action: "accept" | "reject" = body?.action;
@@ -27,9 +29,10 @@ export async function PUT(req: NextRequest) {
     const conditionGrade: string | undefined = body?.conditionGrade ?? undefined;
 
 
+    //checks to see if staff memeber select an donation id and an actions 
     if (!donationId || !action) {
       return NextResponse.json(
-        { error: "donationId and action are required." },
+        { error: "Donation ID and an Action is required." }, // print error if user does not select an action and donation id
         { status: 400 }
       );
     }
@@ -37,23 +40,23 @@ export async function PUT(req: NextRequest) {
   const db = await openDb();
 
 // Update donation status
-     const newStatus = action === "accept" ? "Accepted" : "Rejected";
+     const newStatus = action === "accept" ? "Accepted" : "Rejected"; // the different type of actions
 
      await db.run(
-       `UPDATE Donations SET Status = ?, Submitted_At = Submitted_At WHERE Donation_ID = ?`,
+       `UPDATE Donations SET Status = ?, Submitted_At = Submitted_At WHERE Donation_ID = ?`, // updates the status inside of the database
        [newStatus, donationId]
      );
 
 
      await db.run(
-       `UPDATE Donations SET Condition_Grade = COALESCE(?, Condition_Grade) WHERE Donation_ID = ?`,
+       `UPDATE Donations SET Condition_Grade = COALESCE(?, Condition_Grade) WHERE Donation_ID = ?`, //updates the condition grade as i forgot to add this before.
        [conditionGrade ?? null, donationId]
      );
 
 
-     if (newStatus === "Accepted") {
+     if (newStatus === "Accepted") { //it creates a tracking order from a random number generator 
        const trackingNumber =
-         "TRK-" + Math.floor(1000000000 + Math.random() * 9000000000);
+         "TRK-" + Math.floor(1000000000 + Math.random() * 9000000000); //random number generater for tracking number id
 
        await db.run(
          `UPDATE Donations SET Tracking = ? WHERE Donation_ID = ?`,
@@ -107,17 +110,19 @@ export async function PUT(req: NextRequest) {
       [donationId]
     );
 
-    if (donorUser?.User_ID) {
+    if (donorUser?.User_ID) { //inserts the new input data into the database for notifications
       await db.run(
         `INSERT INTO Notifications (User_ID, Donation_ID, Status, Generated_At)
          VALUES (?, ?, ?, datetime('now'))`,
-        [donorUser.User_ID, donationId, newStatus]
+        [donorUser.User_ID, donationId, newStatus] //assigns the input data to the values of each notification table row
       );
     }
 
     return NextResponse.json({ ok: true, status: newStatus });
-  } catch (err) {
-    console.error("review PUT error:", err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  } 
+  catch (err) //catches any debug error it finds // stops it from crashing the program
+  {
+    console.error("Review error code:", err);
+    return NextResponse.json({ error: "Server Error" }, { status: 500 }); //if there an error with the server prints out this message
   }
 }

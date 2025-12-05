@@ -1,0 +1,455 @@
+Date: Tue, 2 Dec 2025 14:47:41 +0000 (UTC)
+Message-ID: <1008173003.155.1764686861967@82bd3d3f680e>
+Subject: Exported From Confluence
+MIME-Version: 1.0
+Content-Type: multipart/related; 
+	boundary="----=_Part_154_1209071051.1764686861966"
+
+------=_Part_154_1209071051.1764686861966
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Content-Location: file:///C:/exported.html
+
+<html xmlns:o=3D'urn:schemas-microsoft-com:office:office'
+      xmlns:w=3D'urn:schemas-microsoft-com:office:word'
+      xmlns:v=3D'urn:schemas-microsoft-com:vml'
+      xmlns=3D'urn:w3-org-ns:HTML'>
+<head>
+    <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8=
+">
+    <title>Sprint 1 Scrum Retrospective</title>
+    <!--[if gte mso 9]>
+    <xml>
+        <o:OfficeDocumentSettings>
+            <o:TargetScreenSize>1024x640</o:TargetScreenSize>
+            <o:PixelsPerInch>72</o:PixelsPerInch>
+            <o:AllowPNG/>
+        </o:OfficeDocumentSettings>
+        <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>90</w:Zoom>
+            <w:DoNotOptimizeForBrowser/>
+        </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <style>
+                <!--
+        @page Section1 {
+            size: 8.5in 11.0in;
+            margin: 1.0in;
+            mso-header-margin: .5in;
+            mso-footer-margin: .5in;
+            mso-paper-source: 0;
+        }
+
+        table {
+            border: solid 1px;
+            border-collapse: collapse;
+        }
+
+        table td, table th {
+            border: solid 1px;
+            padding: 5px;
+        }
+
+        td {
+            page-break-inside: avoid;
+        }
+
+        tr {
+            page-break-after: avoid;
+        }
+
+        div.Section1 {
+            page: Section1;
+        }
+
+        /* Confluence print stylesheet. Common to all themes for print medi=
+a */
+/* Full of !important until we improve batching for print CSS */
+
+@media print {
+    #main {
+        padding-bottom: 1em !important; /* The default padding of 6em is to=
+o much for printouts */
+    }
+
+    body {
+        font: var(--ds-font-body-small, Arial, Helvetica, FreeSans, sans-se=
+rif);
+    }
+
+    body, #full-height-container, #main, #page, #content, .has-personal-sid=
+ebar #content {
+        background: var(--ds-surface, #fff) !important;
+        color: var(--ds-text, #000) !important;
+        border: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+    }
+
+    a, a:link, a:visited, a:focus, a:hover, a:active {
+        color: var(--ds-text, #000);
+    }
+
+    #content h1,
+    #content h2,
+    #content h3,
+    #content h4,
+    #content h5,
+    #content h6 {
+        page-break-after: avoid;
+    }
+
+    pre {
+        font: var(--ds-font-code, Monaco, "Courier New", monospace);
+    }
+
+    #header,
+    .aui-header-inner,
+    #navigation,
+    #sidebar,
+    .sidebar,
+    #personal-info-sidebar,
+    .ia-fixed-sidebar,
+    .page-actions,
+    .navmenu,
+    .ajs-menu-bar,
+    .noprint,
+    .inline-control-link,
+    .inline-control-link a,
+    a.show-labels-editor,
+    .global-comment-actions,
+    .comment-actions,
+    .quick-comment-container,
+    #addcomment {
+        display: none !important;
+    }
+
+    /* CONF-28544 cannot print multiple pages in IE */
+    #splitter-content {
+        position: relative !important;
+    }
+
+    .comment .date::before {
+        content: none !important; /* remove middot for print view */
+    }
+
+    h1.pagetitle img {
+        height: auto;
+        width: auto;
+    }
+
+    .print-only {
+        display: block;
+    }
+
+    #footer {
+        position: relative !important; /* CONF-17506 Place the footer at en=
+d of the content */
+        margin: 0;
+        padding: 0;
+        background: none;
+        clear: both;
+    }
+
+    #poweredby {
+        border-top: none;
+        background: none;
+    }
+
+    #poweredby li.print-only {
+        display: list-item;
+        font-style: italic;
+    }
+
+    #poweredby li.noprint {
+        display: none;
+    }
+
+    /* no width controls in print */
+    .wiki-content .table-wrap,
+    .wiki-content p,
+    .panel .codeContent,
+    .panel .codeContent pre,
+    .image-wrap {
+        overflow: visible !important;
+    }
+
+    /* TODO - should this work? */
+    #children-section,
+    #comments-section .comment,
+    #comments-section .comment .comment-body,
+    #comments-section .comment .comment-content,
+    #comments-section .comment p {
+        page-break-inside: avoid;
+    }
+
+    #page-children a {
+        text-decoration: none;
+    }
+
+    /**
+     hide twixies
+
+     the specificity here is a hack because print styles
+     are getting loaded before the base styles. */
+    #comments-section.pageSection .section-header,
+    #comments-section.pageSection .section-title,
+    #children-section.pageSection .section-header,
+    #children-section.pageSection .section-title,
+    .children-show-hide {
+        padding-left: 0;
+        margin-left: 0;
+    }
+
+    .children-show-hide.icon {
+        display: none;
+    }
+
+    /* personal sidebar */
+    .has-personal-sidebar #content {
+        margin-right: 0px;
+    }
+
+    .has-personal-sidebar #content .pageSection {
+        margin-right: 0px;
+    }
+
+    .no-print, .no-print * {
+        display: none !important;
+    }
+}
+-->
+    </style>
+</head>
+<body>
+    <h1>Sprint 1 Scrum Retrospective</h1>
+    <div class=3D"Section1">
+        <div class=3D"confluence-information-macro confluence-information-m=
+acro-information">
+<span class=3D"aui-icon aui-icon-small aui-iconfont-info confluence-informa=
+tion-macro-icon"></span>
+<div class=3D"confluence-information-macro-body">
+<p>Reflect on past work and identify opportunities for improvement by follo=
+wing the instructions for the <a class=3D"external-link" href=3D"https://ww=
+w.atlassian.com/team-playbook/plays/retrospective" rel=3D"nofollow">Retrosp=
+ective Play</a>.</p>
+</div>
+</div>
+<h2 id=3D"Sprint1ScrumRetrospective-Overview"><img class=3D"emoticon emotic=
+on-blue-star" data-emoji-id=3D"1f4cb" data-emoji-shortname=3D":clipboard:" =
+data-emoji-fallback=3D"\uD83D\uDCCB" src=3D"0fcae5df1cb7b8076767e4bbccc5a4b=
+06c60f885b644a73cb533085fac754435" width=3D"16" height=3D"16" data-emoticon=
+-name=3D"blue-star" alt=3D"(blue star)">&nbsp;Overview</h2>
+<div class=3D"table-wrap">
+<table data-table-width=3D"760" data-layout=3D"default" data-local-id=3D"f3=
+9e028f-9275-41e2-88ca-47a3f144a874" class=3D"confluenceTable">
+<colgroup>
+<col style=3D"width: 251.0px;">
+<col style=3D"width: 509.0px;">
+</colgroup>
+<tbody>
+<tr>
+<th class=3D"confluenceTh">
+<p><strong>Date</strong></p></th>
+<td class=3D"confluenceTd">
+<p><time datetime=3D"2025-11-10" class=3D"date-past">10 Nov 2025</time></p>=
+</td>
+</tr>
+<tr>
+<th class=3D"confluenceTh">
+<p><strong>Team</strong></p></th>
+<td class=3D"confluenceTd">
+<p>Group 17</p></td>
+</tr>
+<tr>
+<th class=3D"confluenceTh">
+<p><strong>Participants</strong></p></th>
+<td class=3D"confluenceTd">
+<p>Jason, Labib, Mobeen, Ayan and Uzry</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id=3D"Sprint1ScrumRetrospective-Retrospective"><img class=3D"emoticon e=
+moticon-blue-star" data-emoji-id=3D"1f4ad" data-emoji-shortname=3D":thought=
+_balloon:" data-emoji-fallback=3D"\uD83D\uDCAD" src=3D"f7ed8f7024c7acdc1b19=
+8680a7663c7877c085cd3969c3b9b602f8f9bd6dfeed" width=3D"16" height=3D"16" da=
+ta-emoticon-name=3D"blue-star" alt=3D"(blue star)">&nbsp;Retrospective</h2>
+<div class=3D"table-wrap">
+<table data-table-width=3D"760" data-layout=3D"default" data-local-id=3D"48=
+930667-612c-4d84-885c-1660f537d8a4" class=3D"confluenceTable">
+<tbody>
+<tr>
+<th data-highlight-colour=3D"var(--ds-background-accent-green-subtlest, #e3=
+fcef)" class=3D"confluenceTh">
+<p><img class=3D"emoticon emoticon-blue-star" data-emoji-id=3D"25b6" data-e=
+moji-shortname=3D":arrow_forward:" data-emoji-fallback=3D"=E2=96=B6=EF=B8=
+=8F" src=3D"92631e857aaab9779188a0bd387e81d17ffba008447a95d19e75f8a758859b1=
+3" width=3D"16" height=3D"16" data-emoticon-name=3D"blue-star" alt=3D"(blue=
+ star)"><strong>&nbsp;Start doing</strong></p></th>
+<th data-highlight-colour=3D"var(--ds-background-accent-red-subtlest, #ffeb=
+e6)" class=3D"confluenceTh">
+<p><img class=3D"emoticon emoticon-blue-star" data-emoji-id=3D"1f6d1" data-=
+emoji-shortname=3D":octagonal_sign:" data-emoji-fallback=3D"=F0=9F=9B=91" s=
+rc=3D"10f1cb1c3a86d2449d8fd49becc374ca17dd483a72a6931920e1b36dfa925d57" wid=
+th=3D"16" height=3D"16" data-emoticon-name=3D"blue-star" alt=3D"(blue star)=
+"><strong>&nbsp;Stop doing</strong></p></th>
+<th data-highlight-colour=3D"var(--ds-background-accent-teal-subtlest, #e6f=
+cff)" class=3D"confluenceTh">
+<p><img class=3D"emoticon emoticon-blue-star" data-emoji-id=3D"1f64c" data-=
+emoji-shortname=3D":raised_hands:" data-emoji-fallback=3D"=F0=9F=99=8C" src=
+=3D"b68147d958a01e9720d2f5ff5ecaab412681f449377774e3b4e7c453b4b027b7" width=
+=3D"16" height=3D"16" data-emoticon-name=3D"blue-star" alt=3D"(blue star)">=
+<strong>&nbsp;Keep doing</strong></p></th>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>Make sure everything we do is done at a much quicker rate</p></td>
+<td class=3D"confluenceTd">
+<p>Need to be more clear on what tasks you guys are doing or have done</p><=
+/td>
+<td class=3D"confluenceTd">
+<p>Our overall project sharing and the tools we used for that are good</p><=
+/td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>Make sure we double check our work and be more thorough which our work</=
+p></td>
+<td class=3D"confluenceTd">
+<p>To not be efficient with your time as it slows down the overall project<=
+/p></td>
+<td class=3D"confluenceTd">
+<p>Our weekly meets for the client to get a better understanding on what th=
+e application should look and run like</p></td>
+</tr>
+<tr>
+<td class=3D"confluenceTd">
+<p>To try and meet all client requirements and add features that are benefi=
+cial to the overall project</p></td>
+<td class=3D"confluenceTd">
+<p>Need to stop adding random things onto the application or diagrams that =
+are not helpful or related</p></td>
+<td class=3D"confluenceTd">
+<p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class=3D"panel" style=3D"background-color: #EAE6FF;border-color: #998D=
+D9;border-width: 1px;">
+<div class=3D"panelContent" style=3D"background-color: #EAE6FF;">
+<p><strong>Pro tip:</strong> You can also run a retro on a Confluence white=
+board by typing /retro</p>
+</div>
+</div>
+<p><br></p>
+<h2 id=3D"Sprint1ScrumRetrospective-Actionitems"><img class=3D"emoticon emo=
+ticon-blue-star" data-emoji-id=3D"2705" data-emoji-shortname=3D":white_chec=
+k_mark:" data-emoji-fallback=3D"=E2=9C=85" src=3D"a8b670b7b909f131c19892ce6=
+b339450352ae6f90f486fde3137642a5cb2a01d" width=3D"16" height=3D"16" data-em=
+oticon-name=3D"blue-star" alt=3D"(blue star)">&nbsp;Action items</h2>
+<p></p>
+<p>Reduce Technical Debt i.e leaving the work for later and letting it buil=
+d up leading in more work needing to be done</p>
+<p>Adjust Workload</p>
+<p>Improve Testing</p>
+<ul class=3D"inline-task-list" data-inline-tasks-content-id=3D"15269896">
+<li class=3D"checked" data-inline-task-id=3D"1"><span class=3D"placeholder-=
+inline-tasks"></span></li>
+</ul>
+    </div>
+</body>
+</html>
+------=_Part_154_1209071051.1764686861966
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///C:/a8b670b7b909f131c19892ce6b339450352ae6f90f486fde3137642a5cb2a01d
+
+iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAMAAABiM0N1AAAARVBMVEVHcEx3slV3slV3slV3slV3
+slX///93slWAt2D3+vSRwHXM4r+72aqz1J/u9eqIvGrm8d+qz5WZxYDd7NXV58rE3bWiyor8Z4cF
+AAAABnRSTlMAYO8gz79WeQLOAAABcUlEQVR4Xu3YWY6DQAwEUEjA7pV1uf9RR1lGcjqtFGr3SPOR
+OsCD+imEm1vanhXp2+aRa8fKdNe7c2F1Ljep4wrpmqblKmmbvg7UN1wpfwZ9IbO4GtDoicgGNTRa
+usdroZWemXVQpN9MCMLFnlFBG9WBDuFsCshYAR0KaEteCEO4mDXlkBkEFLkc2oWzcjm0yGJjAimK
+FUMhKVYKORJxCmgSTuBySBabGECniymgVTg7l0NROIMph+Sa0cIAUhQDECiGILxmGHLekvUGrBmG
+jseTrcNrlofSBtaBYgCKRLlvqE/WDEMrCQmsGYaklF8zDO0k4z/MNIBGSqR8MQxxeJeGzJphiOOr
+tJr8mmGI51dpkqwD0EfpQzEA8WLzzsAISuPy0gIhLOXXDEM8Tu/FTAnEZsoVwxCWPBdCbDzhNcNQ
+ukIHKyAhbayCOIhiKohne3MGx1qITQxh/n+/ol+o2pGl2tmn1iGq2mms3rGu2vnwB/HSjdEb7tSV
+AAAAAElFTkSuQmCC
+------=_Part_154_1209071051.1764686861966
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///C:/b68147d958a01e9720d2f5ff5ecaab412681f449377774e3b4e7c453b4b027b7
+
+iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAMAAABiM0N1AAAAsVBMVEVHcEz/3F3/3F3/3F3/3F3/
+3F3/3F3/3F3/3F3/3F3/3F1drez/3F1drexdrexdrexdrez/3F3/3F1drexdrexdrez/3F3/3F1d
+rexdrexdrexdrexdrez/3F35ylXzqEv+2Fz3uVH5wlRdrez901r6zVfvlkX4vVP91Vr81Fryo0r8
+z1nwmkf7z1f70Vj70Fj0rE3xn0j/213801n6zFb+2Vz5y1b+2lz7y1f6xlb2tVADpKKuAAAAHXRS
+TlMAIBDf72CfQL+AMO/PEIBg349QzzAgr3Cvj1BAn+3Kp5gAAALPSURBVHhe7ZTXdqMwFEUlIYSM
+cVySOMUjmrvT65T//7CxpCFqIIg9ect58vI+2pcLxqA9J/P5CTgg16PR0ADzfdxGe/r7c9c+0Rlv
+DHwKda5/3iwajHjjrF10yXunlsjl7Rmc8uaPJtEJp33PZtY9mA/rRbM5zwx0ylAMPasTDfiQ7r+G
+K94eDWpEYu3LdoPVVyJrQueciw3OHZHauWtmQuS8In31FLpm2Ben3W+vuglghLoVkb8YMsZCBQ4v
+4j0PQJywIG6qRAGjsSjiWh5PKUGA8QDKW75Z9F8RETqNaziRXLYaLinSKoCIiS7HuijqIMKy6HL0
+SRFrEkVHicIAE3SMCBGchABADnrHiHq8DkHIAT1GRGW999Ui+L9EoF0UfbkIO6KI0lAKQjqNfKJQ
+F1FbBDGvCA+fAz2inldEBOMiUR4fKkKYM/KhxOhA0QVHajXxMe4iCoggvUoUiCLiIiRIsFdqFeKK
+kjGzA8CECQREkuq9cYrjRInqAgAV4EKKZG3KRW78Isj0v9xYAvg50WJdZIBUt0UGyz1AVqwXHUXl
+bpUVJZUnSSWSXkzLIlvtyg6iRfZU5qowqUShquTlU7ZoE93cFkYBVSKot/I/tzeOyPKUBk/ARxJz
+f93kivIna/uxEhGTrHe5R1Q8MjOhEl1YKCsMkcHzlX0PIyWKLLS4zfWJBl8/MitAi80e18ZEqKHd
+b6sb6KLAgmWmNaHBV7nVJbqI2LutzIlj7dkzKxNdNLHpamE8XahEmbuZb7fsRm1mXvKv+odvvyVu
+nQiOMKsPBVaShiJG+vIuhrYIuiPdN9v1xMBJXGsK7e39HmXy3cm7nxalENQGUqv4c2nw9P3lWach
+aEyoz3x+eU8N+pqm6f1GVt62dxp0k95t3+S4zcP+2KsB2WaZavGL9Cw3zIDcv71fVvTBJ3r4qN1v
++Q6myIol8Hfb4bfoW/Qt+gtFGC0vRNfYbwAAAABJRU5ErkJggg==
+------=_Part_154_1209071051.1764686861966
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///C:/0fcae5df1cb7b8076767e4bbccc5a4b06c60f885b644a73cb533085fac754435
+
+iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAMAAABiM0N1AAAAPFBMVEVHcEzM1t3M1t3M1t3M1t3M
+1t2Zoqg9REgpLzPM1t3M1t3M1t3BaU/BaU/BaU/CcFjgtKf////M1dqZqrWLZiLOAAAADnRSTlMA
+IJ/v/zD///8QUN9Q360w504AAADiSURBVHgB7dhVgoUwEERRIIVrw/7XOoI7HRl9fRdwgKS+8J7y
+AwWowPcsCxX6VGjn+ApRnCRxBOVbQQGipC9CYAUpxAMUQ9k4KZCMAZ52WY6lBZrLM6aDVcunreNJ
+OVYth70uZ57Luun6t90BRVn11WBUDZXFiVNNcaG+o1SaQeUBqsyg6s9ADRGBERE1txDxIfprELPf
+BgnUdie1BlB3mjPoxz6Nn+zovtbw+o99I2T/abKjv78j2ZHsSHYkUOvqsLvT3EPmnyY7aohdcwMZ
+9Beg0swpD1BhBhWnP1m0KxfnHV+T0IbfZ3ihAAAAAElFTkSuQmCC
+------=_Part_154_1209071051.1764686861966
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///C:/92631e857aaab9779188a0bd387e81d17ffba008447a95d19e75f8a758859b13
+
+iVBORw0KGgoAAAANSUhEUgAAAEgAAABIBAMAAACnw650AAAAKlBMVEVHcEw7iMM7iMM7iMM7iMM7
+iMM7iMNHj8fz+PudxOH////n8PiFtdqRvN0EUhs+AAAAB3RSTlMAYL//IM/vVZgOvgAAALZJREFU
+eAFiYGAQMsYLFBmAwNWYAAhhYGBJJqTIzIGB1ZggCGAQJqzIkEGZsCIjBmMiwAhRVEyMos5iQLt1
+aAMwDAAxcH/QRTpDhys8Zr0UGn7cHtBLBaICUYFCQaGgUFAoiApEFaIKUYWoQlQhqhBViCpEFaIK
+UYWoQNSCvkRMIwYKA4WBwkBhoDBQGCgMFAYKA4WBmEBhoDBQGCgMFAYKA4WBnpvXczQNzbRG02RN
+uzaN37KQP03j8PLrPA2+AAAAAElFTkSuQmCC
+------=_Part_154_1209071051.1764686861966
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///C:/f7ed8f7024c7acdc1b198680a7663c7877c085cd3969c3b9b602f8f9bd6dfeed
+
+iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAMAAABiM0N1AAAAM1BMVEVHcEy93fS93fS93fS93fS9
+3fS93fS93fS93fS93fS93fS93fS93fS93fS93fS93fS93fSov3vyAAAAEHRSTlMAII9wv88w758Q
+r99QQIBg/5/+pQAAAUlJREFUeF7t18tuxCAMBVATHuaV6f3/r61UIdERmclge1OpZ8niKhhiGfpD
+ks/hR32cJHZmxm/1iyS+IhbtQbtSwKXWacsDL+VCHysVb0T3cU7EW5wEOZqkiluxFF8ZALj6sl/n
+qd2XP2Efd1oFSBzrfQZskiKEOj05IcXPFc8QyzT1zJArNJwNKn7kHFCqszo6PL5Hbxy7TVAzCuow
+CsowwHNn+uOHBW8VVIyCMtkEcTG6Rn1pQ6pW201y9Hvjru7V63xyQCzQk6xraCbfRIO6+dOi56YM
+msyCWFfsKeiOf/KyhrZy2OboUhXuTD9DJnrhEM98qukvlt3JP8bdnOukWEq8z7mv03G9WjbffTWN
+1YoJIdEnnA8MABy8e7e6cpkBzo6UEs+3mIZjDOxIIy8jvBAvjUoIEyyD7LdmX2z747e/kJpfRO/f
+N20ms7m0AGmsAAAAAElFTkSuQmCC
+------=_Part_154_1209071051.1764686861966
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
+Content-Location: file:///C:/10f1cb1c3a86d2449d8fd49becc374ca17dd483a72a6931920e1b36dfa925d57
+
+iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAMAAABiM0N1AAAAD1BMVEVHcEzM1t3dLkTM1t3Sl6Sn
+4JMPAAAAAnRSTlMAYDshrGAAAACfSURBVHja7dg7CsMAEENB/+5/5oBJeJVDYFzEsDrAtCvt8pCs
++5es6iSpk6RO0u/OsV3kSBInSZ0kdZLUSVInSZ0kdZLUSVInSZ0kdpJKjkk5JuWYlKPSxxHphN6O
+SEEbZKCBBhpooIH+C/IDedvJvq9EiOQFySubl0ivtV60vfqT46PGZxZJPiF91PrM9uGvThI48GSB
+t49JOSTlPCMvieAhja33QnIAAAAASUVORK5CYII=
+------=_Part_154_1209071051.1764686861966--

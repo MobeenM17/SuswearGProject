@@ -26,7 +26,7 @@ body {
 
 /* the back to homepage text link */
 .back-home-link {
-  font-size: 20px;
+  font-size: 1.3rem;
   position: absolute;
   left: 16px; /* changes the position to the top*/
   top: 12px; /* changes the position to the top*/
@@ -38,7 +38,7 @@ body {
 
 /* Heading for login box */
 .login-container-box h1 {
-  font-size: 26px;
+  font-size: 2rem;
   margin-bottom: 25px;
   color: var(--accent);
 }
@@ -50,7 +50,7 @@ body {
   margin-bottom: 15px; /* changes the position of the boxes*/
   border: 3px solid var(--edge); /* add a green border around the box edge when selected*/
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 1.3rem;
   text-align: center;
   outline: none;
 }
@@ -68,7 +68,7 @@ body {
   background-color: var(--accent);
   color: #fff;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1.3rem;
   
 }
 .login-btn:hover {

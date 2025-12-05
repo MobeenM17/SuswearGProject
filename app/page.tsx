@@ -9,8 +9,8 @@ export default function Home() {
             <section className="Welcome-Info">
 
                 <div className="Welcome-Left-Box">
-                    <h1><strong>Welcome To SustainWear Charity!</strong></h1>
-                    <p>We are the charity that donates your clothes for better purposes!</p>
+                    <h1><strong>Welcome To SustainWear!</strong></h1>
+                    <p>We are the organisation that distributes your donated clothes for better purposes!</p>
 
                     {/* Buttons for Login / Register / Shop */}
                     <div className="Home-Button-area">
@@ -21,21 +21,13 @@ export default function Home() {
                 </div>
 
                 <div className="Welcome-Right-Box">
-                    <Image
-                        src="/home-clothes-donation.png"
-                        alt="Image of clothes being donated"
-                        width={560}
-                        height={360}
-                        className="Welcome-Image"
-                        priority
-                    />
+                    <Image src="/home-clothes-donation.png" alt="Image of clothes being donated" width={560} height={360} className="Welcome-Image" priority/>
                 </div>
             </section>
 
             {/* How It Works Section */}
             <section className="Home-Info-Section">
                 <h2>How does it work</h2>
-
                 <div className="Home-Info-Boxes">
                     <div className="Home-Info-Card">
                         <h3>1. Add your items</h3>
@@ -60,24 +52,9 @@ export default function Home() {
                 <p>
                     SustainWear is an organisation that helps doners give away their clothes 
                     to people who need them the most. We work with local charities to review 
-                    the item and distribute it to people in need — reducing landfill waste 
-                    and environmental impact.
+                    the item and distribute it to people in need.
                 </p>
-            </section>
-
-            {/* Categories */}
-            <section>
-                <h2>Popular Categories</h2>
-                {(() => {
-                    const categories = ["Clothing", "Men", "Women", "Children", "Coats & Jackets", "Tops"];
-                    return (
-                        <div className="Category-lists">
-                            {categories.map((name) => (
-                                <span key={name} className="Category-Type">{name}</span>
-                            ))}
-                        </div>
-                    );
-                })()}
+                <p><strong>Our organisations helps to reduce landfill waste and environmental impact by distributing your donated item!</strong></p>
             </section>
 
             {/* Footer */}

@@ -4,6 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import "./sent.css";
 
+type Charity = {
+  Charity_ID: number;
+  Charity_Name: string;
+};
+
 type SentDonation = {
   Donation_ID: number;
   Description: string;
@@ -19,6 +24,8 @@ export default function SentDonations() {
   const [donations, setDonations] = useState<SentDonation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedCharities, setSelectedCharities] = useState<Record<number, number>>({});
+  const [charities, setCharities] = useState<Charity[]>([]);
 
 
   useEffect(() => {
@@ -42,9 +49,34 @@ export default function SentDonations() {
       }
     })();
   }, []);
+  
+  // Handle Charities
+  
+  useEffect(() => {
+  (async () => {
+    try {
+      const res = await fetch("/api/charity/list", {
+        cache: "no-store",/* No caching to ensure fresh data */
+        credentials: "include", /* Include cookies for authentication */
+      });
 
+      if (!res.ok) {throw new Error("Failed to load charities");}
+
+      const data: Charity[] = await res.json();
+      setCharities(data);// Set charities state
+    } catch (e) {
+      console.error(e);
+    }
+  })();
+}, []);
 
   const handleSend = async (donationId: number) => {
+    const charityid = selectedCharities[donationId];// Get selected charity ID for this donation
+    if (!charityid || isNaN(charityid)) {
+      alert("Please select a charity for this donation before sending.");
+      return;
+    }
+
     const confirmed = confirm(
       "Have you posted this item to our local warehouse?"
     );
@@ -54,7 +86,7 @@ export default function SentDonations() {
       const res = await fetch("/api/donations/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ donationId }),
+        body: JSON.stringify({ donationId, charityId: charityid }),
         credentials: "include",
       });
 
@@ -139,18 +171,41 @@ export default function SentDonations() {
                   <td>{d.WeightKg?.toFixed(1) ?? "-"}</td>
                   <td>{d.Tracking}</td>
                   <td>{new Date(d.Submitted_At).toLocaleDateString()}</td>
-                  <td>
-                    {d.Inventory_Status === "Arriving" ? (
-                      <button
-                        className="primary-btn"
-                        onClick={() => handleSend(d.Donation_ID)}
+                    <td>
+                      {d.Inventory_Status === "Arriving" ? (
+                        <>
+                         <select
+                             value={selectedCharities[d.Donation_ID] ?? ""}
+                             onChange={(e) =>
+                              setSelectedCharities((prev) => ({
+                              ...prev,
+                             [d.Donation_ID]: Number(e.target.value),
+                           }))
+                         }
+                         className="charity-select"
                       >
-                        Send
-                      </button>
-                    ) : (
-                      <span className="muted">Sent</span>
-                    )}
-                  </td>
+                         <option value="">Select a charity</option>
+
+                         {charities.map((c) => (
+                          <option key={c.Charity_ID} value={c.Charity_ID}>
+                              {c.Charity_Name}
+                              </option>
+                             ))}
+                        </select>
+
+                          <button
+                            className="primary-btn"
+                             onClick={() => handleSend(d.Donation_ID)}   
+                            >
+                            Send
+                           </button>
+                             </>
+                             ) : (
+                              <span className="muted">Sent</span>
+                              )} 
+                  
+                </td>
+
                 </tr>
               ))}
             </tbody>
