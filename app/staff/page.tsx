@@ -168,7 +168,7 @@ export default function StaffDashboard() {
           </span>
         <div className="left"> <h1><strong>Staff Dashboard!</strong></h1></div>
         <div className="right">
-          <button className="ghost-btn" onClick={refreshList} disabled={loading}> {loading ? "Refreshing…" : "Refresh"} </button>
+          <button className="outline-btn" onClick={refreshList} disabled={loading}> {loading ? "Refreshing…" : "Refresh"} </button>
           <button className="outline-btn logout-btn" onClick={handleLogout}>Logout!</button>
         </div>
       </header>

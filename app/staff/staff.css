@@ -14,6 +14,15 @@
 .staff-header h1 { 
   color: var(--accent); 
 }
+
+.staff-header .right { 
+  gap: 12px;
+  display: flex;
+  align-items: center;
+}
+
+
+
 .back-link {  
   color: var(--accent); 
   font-weight: 700; 
@@ -91,6 +100,11 @@
   font-weight: 700; 
   cursor: pointer;
   padding: 10px 12px; 
+}
+
+.outline-btn:disabled{
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .primary-btn { 
