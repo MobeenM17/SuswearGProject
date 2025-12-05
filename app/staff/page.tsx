@@ -164,7 +164,7 @@ export default function StaffDashboard() {
     <div className="staff-wrap">
       <header className="staff-header">
       <span className="back-link" onClick={() => router.push("/")}>
-            ← Back to homepage
+             Back to homepage
           </span>
         <div className="left"> <h1><strong>Staff Dashboard!</strong></h1></div>
         <div className="right">
