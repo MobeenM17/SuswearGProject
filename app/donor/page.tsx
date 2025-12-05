@@ -125,13 +125,6 @@ export default function DonorDashboard() {
           <h1>Donor Dashboard</h1>
         </div>
         <div className="header-actions">
-          <span
-            className="outline-btn"
-            onClick={() => router.push("/donor")}
-          >
-            Dashboard
-          </span>
-
           <button
             type="button"
             className="outline-btn"

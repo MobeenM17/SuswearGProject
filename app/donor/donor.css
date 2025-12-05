@@ -4,19 +4,22 @@
 body { background: var(--background); color: var(--text); }
 
 /* wrapper */
-.donor-wrap { padding-top: 12px; }
+.donor-wrap { 
+  padding-top: 12px; 
+  font-size: 1.3rem;
+}
 
 /* header donor */
 /* makes it so it stays at the top and has a blur */
 .donor-header {
   position: sticky;
   top: 0;
+  min-height: 72px;
   z-index: 5;
   backdrop-filter: saturate(120%) blur(6px);
   background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.65));
   border: 1px solid var(--edge);
   box-shadow: var(--shadow);
-  
   border-radius: 12px;
   padding: 14px 16px;
   display: flex;
@@ -30,18 +33,16 @@ body { background: var(--background); color: var(--text); }
 /* styling the main header title */
 .header-left h1 {
   color: var(--accent);
-  font-size: 26px;
+  font-size: 2rem;
   line-height: 1.1;
   margin: 0;
 }
 
 /* BACK TO HOME PAGE, Press and u can go back */
 .back-link {
-  font-size: 13px;
+  font-size: 1rem;
   color: var(--accent);
   text-decoration: none;
-  font-weight: 600;
-  opacity: .9;
 }
 .back-link:hover { color: var(--accent-hover); text-decoration: underline; }
 
@@ -53,6 +54,7 @@ body { background: var(--background); color: var(--text); }
   border-radius: 10px;
   padding: 10px 16px;
   font-weight: 700;
+  font-size: 1rem;
   cursor: pointer;
   border: 1px solid transparent;
   transition: transform .06s ease, box-shadow .2s ease;
@@ -106,7 +108,7 @@ body { background: var(--background); color: var(--text); }
 .form { display: grid; gap: 12px; }
 
 /* styling each form label and input group */
-.label { display: grid; gap: 8px; font-size: 14px; }
+.label { display: grid; gap: 8px; font-size: 1.3rem; }
 
 /* styles for the text boxes.*/
 .input {
@@ -115,7 +117,7 @@ body { background: var(--background); color: var(--text); }
   border: 1px solid var(--edge);
   border-radius: 10px;
   outline: none;
-  font-size: 14px;
+  font-size: 1.1rem;
   background: #fff;
   color: var(--text);
   transition: border-color .15s ease, box-shadow .15s ease;
@@ -150,12 +152,12 @@ textarea.input { resize: vertical; min-height: 96px; }
   text-align: center;
   box-shadow: var(--shadow);
 }
-.stat-value { font-size: 24px; font-weight: 800; }
-.stat-label { font-size: 12px; color: #6b7280; }
-.muted { color: #6b7280; font-size: 12px; margin-top: 8px; }
+.stat-value { font-size: 1.5rem; font-weight: 800; }
+.stat-label { font-size: 1.2rem; color: #6b7280; }
+.muted { color: #6b7280; font-size: 1rem; margin-top: 8px; }
 
 /* donation history styles */
-.history { grid-column: 1 / span 2; }
+.history { grid-column: 1/ span 2; }
 
 .history-head {
   display: flex;
@@ -168,7 +170,7 @@ textarea.input { resize: vertical; min-height: 96px; }
 /* filters above the table */
 .filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
-.input.small { padding: 8px 10px; font-size: 13px; }
+.input.small { padding: 8px 10px; font-size: 1.2rem; }
 
 /* styling around the table box */
 .table-wrap {
@@ -182,7 +184,7 @@ textarea.input { resize: vertical; min-height: 96px; }
 .table { width: 100%; border-collapse: collapse; font-size: 14px; }
 
 .table th, .table td {
-  padding: 12px 14px;
+  padding: 13px 16px;
   border-bottom: 1px solid var(--edge);
   text-align: left;
 }
@@ -195,7 +197,7 @@ textarea.input { resize: vertical; min-height: 96px; }
 .badge {
   padding: 6px 10px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 1rem;
   font-weight: 800;
   text-transform: capitalize;
   border: 1px solid var(--edge);  
@@ -240,7 +242,7 @@ textarea.input { resize: vertical; min-height: 96px; }
 
 .notification-header h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 1.8rem;
   color: var(--accent);
 }
 
@@ -269,7 +271,7 @@ textarea.input { resize: vertical; min-height: 96px; }
 .notification-title {
   font-weight: 700;
   color: var(--text);
-  font-size: 14px;
+  font-size: 1rem;
 }
 /* accepted tag */
 .badge-accepted {
@@ -277,7 +279,7 @@ textarea.input { resize: vertical; min-height: 96px; }
   color: #017d63;
   border-radius: 999px;
   padding: 4px 10px;
-  font-size: 12px;
+  font-size: 1rem;
   font-weight: 700;
 }
 /* denied tag */
@@ -286,7 +288,7 @@ textarea.input { resize: vertical; min-height: 96px; }
   color: #b91c1c;
   border-radius: 999px;
   padding: 4px 10px;
-  font-size: 12px;
+  font-size: 1rem;
   font-weight: 700;
 }
 
@@ -294,7 +296,7 @@ textarea.input { resize: vertical; min-height: 96px; }
 .notification-date {
   display: block;
   margin-top: 6px;
-  font-size: 12px;
+  font-size: 1rem;
   color: #6b7280;
 }
 
@@ -310,7 +312,19 @@ textarea.input { resize: vertical; min-height: 96px; }
 }
 
 /* well placed layouts good for mobile or small screens */
-@media (max-width: 560px) {
+@media (max-width: 768px){
+
+  .grid,
+  .grid.grid--with-notifications {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .history {grid-column: 1;}
+  
+  .table-wrap{
+    overflow-x: auto;
+  }
   .donor-header {
     flex-direction: column;
     align-items: flex-start;
@@ -342,10 +356,20 @@ textarea.input { resize: vertical; min-height: 96px; }
 
 
 @media (max-width: 560px) {
-  .grid,
-  .grid.grid--with-notifications {
-    grid-template-columns: 1fr !important;
-    gap: 14px;
+  .donor-header{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+  }
+  .header-actions{
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+  .header-actions button {
+    flex: 1;
+    padding: 9px 10px;
   }
 /*the notifications panel card*/
   .notifications-card {

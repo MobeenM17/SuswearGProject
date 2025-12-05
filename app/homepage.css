@@ -6,7 +6,7 @@
   text-align: center;
 }
 .Welcome-Info h1 {
-  font-size: 4rem;
+  font-size: 3rem;
   font-weight: bold; /* bold text*/
   color: var(--accent); 
   margin-bottom: 5px; /*space between the text title and the description below */
@@ -47,17 +47,22 @@
   padding-bottom: 0px;
 }
 .Welcome-Image {
-  padding: 20px; /* 3d affect with blur drop*/
+  display: block;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  width: 500px;
+  width: 100%;
   height: auto;
+  max-width: 500;
+  margin: 0 auto; /* centre it*/
+  border-color: var(--accent);
+  border: 5px solid var(--accent);
+
 }
 
 /* How it works Section */
 
 .Home-Info-Section {
   margin-top: 50px;
-  padding: 10px 10px;
+  padding: 20px 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   text-align: center;
   background-color: var(--card-bg);
@@ -65,46 +70,37 @@
 }
 .Home-Info-Section h2 {
   color: var(--accent);
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: bold;
   margin-bottom: 15px;
   text-align: center;
 }
 .Home-Info-Section p {
   color: #555;
-  font-size: 1rem;
+  font-size: 1.3rem;
   line-height: 1.5;
   text-align: center;
 
 }
 
-/* Categories Grid Section */
-.Category-lists {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 15px;
-  margin-top: 30px;
+.About-Us-Section h2 {
+  color: var(--accent);
 }
-
-.Category-Type {
-  background-color: var(--footer-bg);
-  font-weight: 700;
+.About-Us-Section {
+  font-size: 1.3rem;
   text-align: center;
-  padding: 10px 0;
-  color: #333;
-  cursor: pointer;
-}
+  background-color: var(--card-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 10px 10px;
 
-.Category-Type:hover {
-  color: white;
-  background-color: var(--accent);
 }
 
 
 /* Footer Section */
 footer {
-  background-color: var(--footer-bg);
-  font-size: 1rem;
+  background-color: var(--card-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-size: 1.3rem;
   text-align: center;
   padding: 30px;
   color: #333;
@@ -121,4 +117,13 @@ footer {
 .button-shop:hover {
   background-color: var(--accent-hover);
   color: #fff;
+}
+
+
+@media (max-width: 760px) {
+  .Welcome-Image{
+    padding: 5px; /*when the screen size below 760px it shrinks the padding down for the  image to fit better. */
+    margin-left: -6px; /*to move it left the box*/
+  }
+  
 }

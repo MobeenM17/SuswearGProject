@@ -9,8 +9,8 @@ export default function Home() {
             <section className="Welcome-Info">
 
                 <div className="Welcome-Left-Box">
-                    <h1><strong>Welcome To SustainWear Charity!</strong></h1>
-                    <p>We are the charity that donates your clothes for better purposes!</p>
+                    <h1><strong>Welcome To SustainWear!</strong></h1>
+                    <p>We are the organisation that distributes your donated clothes for better purposes!</p>
 
                     {/* Buttons for Login / Register / Shop */}
                     <div className="Home-Button-area">
@@ -52,24 +52,9 @@ export default function Home() {
                 <p>
                     SustainWear is an organisation that helps doners give away their clothes 
                     to people who need them the most. We work with local charities to review 
-                    the item and distribute it to people in need — reducing landfill waste 
-                    and environmental impact.
+                    the item and distribute it to people in need.
                 </p>
-            </section>
-
-            {/* Categories */}
-            <section>
-                <h2>Popular Categories</h2>
-                {(() => {
-                    const categories = ["Clothing", "Men", "Women", "Children", "Coats & Jackets", "Tops"];
-                    return (
-                        <div className="Category-lists">
-                            {categories.map((name) => (
-                                <span key={name} className="Category-Type">{name}</span>
-                            ))}
-                        </div>
-                    );
-                })()}
+                <p><strong>Our organisations helps to reduce landfill waste and environmental impact by distributing your donated item!</strong></p>
             </section>
 
             {/* Footer */}
