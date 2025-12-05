@@ -37,9 +37,9 @@ export default function LoginPage() {
 
       // after logging in it redirects the user to the correct page dashboard based off the user roles from the database
       const role = data.user.User_Role;
-      if (role === "Donor") router.push("/donor"); 
-      else if (role === "Staff") router.push("/staff");
-      else if (role === "Admin") router.push("/admin");
+      if (role === "Donor") {window.location.href = "/donor";}
+      else if (role === "Staff") {window.location.href = "/staff";}
+      else if (role === "Admin") {window.location.href = "/admin";}
       else router.push("/"); // sends us back to the homepage 
     } catch { //catches any error
       setError("Network error. Please try again.");

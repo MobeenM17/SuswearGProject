@@ -11,7 +11,7 @@
 /* Page description */
 .page-desc {
   margin: 12px 0 20px;
-  font-size: 14px;
+  font-size: 1.3rem;
   color: #6b7280;
   line-height: 1.5;
 }
@@ -22,7 +22,7 @@
 }
 
 .warehouse-title {
-  font-size: 20px;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--accent);
   margin-bottom: 10px;
@@ -39,14 +39,14 @@
 
 .warehouse-name {
   margin: 0 0 8px;
-  font-size: 17px;
+  font-size: 1.8rem;
   font-weight: 800;
   color: var(--text);
 }
 
 /* Note under the address */
 .warehouse-note {
-  font-size: 12px;
+  font-size: 1rem;
   color: #6b7280;
   margin-top: 10px;
   font-style: italic;
@@ -55,4 +55,9 @@
 /* Table */
 .table-wrap {
   margin-top: 25px;
+  
+}
+.table-wrap td {
+  font-size: 1rem;
+  
 }
